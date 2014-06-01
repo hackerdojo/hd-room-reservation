@@ -1,0 +1,13 @@
+<html>
+  <body>
+    Hello {{ user.nickname() }}
+    
+    <ul>
+      {% for slot in slots %}
+      <li>
+        {{ slot.start }}: {{slot.user.nickname()}}
+      </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
