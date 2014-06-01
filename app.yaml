@@ -1,4 +1,4 @@
-application: hd-room-reservation
+application: hd-room-reservation-hrd
 module: default
 version: live
 runtime: python27
