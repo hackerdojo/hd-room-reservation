@@ -22,5 +22,12 @@ handlers:
 - url: /static/
   static_dir: static
 
+- url: /api/v1/.*
+  script: api_v1.app
+
+- url: /login
+  script: api_v1.app
+
 - url: /.*
   script: main.app
+
