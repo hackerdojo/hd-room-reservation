@@ -5,6 +5,8 @@ import jinja2
 from google.appengine.ext import ndb
 from google.appengine.api import users
 
+from models import Slot
+
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -24,11 +26,17 @@ class HomePage(webapp2.RequestHandler):
       return
 
     # As an example, create and save one slot that starts now.
-    slot = Slot(user=user, start=datetime.datetime.now())
+    time = datetime.datetime.now()
+    date = time.date()
+    midnight = datetime.datetime.combine(date, datetime.time())
+    seconds = (time - midnight).seconds
+    slot = seconds / 60 / 30
+    name = user.nickname().replace(".", " ").title()
+    slot = Slot(owner = name, date = date, slot = slot)
     slot.put()
     
     # Load last 10 slots.
-    slots = Slot.query().order(-Slot.start).fetch(10)
+    slots = Slot.query().order(-Slot.slot).fetch(10)
     
     # Set values to pass to HTML template.
     template_values = {
