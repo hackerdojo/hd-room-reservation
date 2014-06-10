@@ -85,7 +85,7 @@ class BookingHandler(ApiHandler):
   # The number of hours required between non-consecutive reservations.
   empty_time = 2
 
-  def get(self):
+  def post(self):
     if not self._check_authentication():
       return
     
@@ -122,7 +122,7 @@ class BookingHandler(ApiHandler):
 
 # Handler for removing a reservation on a slot.
 class RemoveHandler(ApiHandler):
-  def get(self):
+  def post(self):
     if not self._check_authentication():
       return
 
