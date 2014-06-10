@@ -84,6 +84,8 @@ class BookingHandler(ApiHandler):
   slot_length = 0.5
   # The number of hours required between non-consecutive reservations.
   empty_time = 2
+  # The number of days someone can book a slot in advance.
+  advance_booking = 30
 
   def post(self):
     if not self._check_authentication():
@@ -95,6 +97,13 @@ class BookingHandler(ApiHandler):
     slot = int(params[0])
     date = make_date(params[1])
     room = params[2]
+
+    # Make sure they're not booking too far in advance.
+    advance = date - datetime.datetime.now().date()
+    advance = advance.days
+    if advance > self.advance_booking:
+      self.response.out.write(False)
+      return
 
     # Make sure we're not double-booking.
     if Slot.query(ndb.AND(Slot.date == date, Slot.room == room,
