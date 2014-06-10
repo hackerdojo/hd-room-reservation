@@ -10,15 +10,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
-
-#-- Data Model ----------------------------------------------------------------
-
-class Slot(ndb.Model):
-  user = ndb.UserProperty()
-  room = ndb.StringProperty(default="4c")  # we have one room only for now
-  start = ndb.DateTimeProperty()  # Start of reserved slot. Each slot is 30m.
-  
-
 #-- Handlers ------------------------------------------------------------------
 
 class HomePage(webapp2.RequestHandler):
