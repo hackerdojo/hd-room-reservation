@@ -1,6 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-  <body>
-    Hello {{ user.nickname() }}
+
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/ico" href="http://cdn.hackerdojo.com/favicon.ico" />
+	<link rel="stylesheet" type="text/css" href="/static/style.css" />
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+	<title>Room Reservation</title>
+</head>	
+
+<body>
+	<div class="container">
+		<div class="header">
+			<img src="/static/hacker-dojo.png" class="img-responsive hd-logo"/>
+		</div>		
+		<div class="resourceName"></div>
+		<div class="container">
+			<table class="weekNavTable">
+				<tbody>
+					<tr>
+						<td class="text-center"><a href="" class="prevButton btn btn-primary" role="button"> < </a></td>
+						<td class="text-center"><div class="completeWeek"></div></td>
+						<td class="text-center"><a href="" class="nextButton btn btn-primary" role="button"> > </a></td>
+					</tr>	
+				</tbody>	
+			</table>	
+		</div>
+		
+		<table class="schedule table table-bordered table-responsive">
+			<thead>
+				<tr>
+					<th></th>
+					<th id="sun" class="text-center">Sun</th>
+					<th id="mon" class="text-center">Mon</th>
+					<th id="tue" class="text-center">Tue</th>
+					<th id="wed" class="text-center">Wed</th>
+					<th id="thu" class="text-center">Thu</th>
+					<th id="fri" class="text-center">Fri</th>
+					<th id="sat" class="text-center">Sat</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="time-12am-1">
+					<th rowspan="2" class="text-center">12am</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-12am-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-1am-1">
+					<th rowspan="2" class="text-center">1am</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-1am-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-2am-1">
+					<th rowspan="2" class="text-center">2am</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+ 				</tr>
+				<tr class="time-2am-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-3am-1">
+					<th rowspan="2" class="text-center">3am</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-3am-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-4am-1">
+					<th rowspan="2" class="text-center">4am</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-4am-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-5am-1">
+					<th rowspan="2" class="text-center">5am</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-5am-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-6am-1">
+					<th rowspan="2" class="text-center">6am</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-6am-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-7am-1">
+					<th rowspan="2" class="text-center">7am</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-7am-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-8am-1">
+					<th rowspan="2" class="text-center">8am</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-8am-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-9am-1">
+					<th rowspan="2" class="text-center">9am</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-9am-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-10am-1">
+					<th rowspan="2" class="text-center">10am</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-10am-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-11am-1">
+					<th rowspan="2" class="text-center">11am</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-11am-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-12pm-1">
+					<th rowspan="2" class="text-center">noon</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-12pm-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-1pm-1">
+					<th rowspan="2" class="text-center">1pm</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-1pm-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-2pm-1">
+					<th rowspan="2" class="text-center">2pm</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-2pm-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-3pm-1">
+					<th rowspan="2" class="text-center">3pm</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-3pm-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-4pm-1">
+					<th rowspan="2" class="text-center">4pm</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-4pm-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-5pm-1">
+					<th rowspan="2" class="text-center">5pm</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-5pm-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-6pm-1">
+					<th rowspan="2" class="text-center">6pm</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-6pm-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-7pm-1">
+					<th rowspan="2" class="text-center">7pm</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-7pm-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-8pm-1">
+					<th rowspan="2" class="text-center">8pm</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-8pm-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-9pm-1">
+					<th rowspan="2" class="text-center">9pm</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-9pm-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-10pm-1">
+					<th rowspan="2" class="text-center">10pm</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-10pm-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-11pm-1">
+					<th rowspan="2" class="text-center">11pm</th>
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+				<tr class="time-11pm-2">
+					<td class="sunSlot"></td><td class="monSlot"></td><td class="tueSlot"></td><td class="wedSlot"></td><td class="thuSlot"></td><td class="friSlot"></td><td class="satSlot"></td>
+				</tr>
+			</tbody>		
+		</table>
+	</div>
+	Hello {{ user.nickname() }}
     
     <ul>
       {% for slot in slots %}
@@ -8,6 +223,288 @@
         {{ slot.slot }}: {{slot.owner}}
       </li>
       {% endfor %}
-    </ul>
-  </body>
-</html>
+    </ul>	
+</body>	
+
+<script src="/static/jquery-1.11.0.js"></script>
+<script type="text/javascript" src="/static/date.js"></script>
+
+<script>
+
+	// Transform date object into string in the following format: YYYY-MM-DD
+	var convertDateToString = function(dateObj) {
+		var dateString = dateObj.toLocaleDateString("en-US", {year: "numeric"}) + "-" + dateObj.toLocaleDateString("en-US", {month: "numeric"}) + "-" + dateObj.toLocaleDateString("en-US", {day: "numeric"});
+		return dateString;
+	}
+
+
+	// fill slot with corresponding user name
+	var fillOutSlotFromDB = function(datesArray, roomParam) {
+		// make AJAX call
+		var datesArrayLength = datesArray.length;
+		var dateParam = "";
+
+		for (i=0;i<datesArrayLength;i++) {
+			dateParam = convertDateToString(datesArray[i]);
+			$.ajax({
+				url: '/api/v1/schedule',
+				type: 'GET',
+				data: {date: dateParam, room: roomParam},
+				success: function(resp) {
+					// alert("ajax call was successful!!, resp:" + resp);
+				},
+				error: function(req, status, err) {
+
+				}
+			});
+		}	
+	}
+
+	// book slot
+/*
+	var bookSlot = function($slotObject) {
+		$slotObject.text(userName);
+
+		// set parameters to send in th Ajax call
+		var slotWeekDay = $slotObject.attr("class");
+		var dateParam =  "";
+		switch (slotWeekDay) {
+			case "sunSlot":
+				break;
+		}
+
+		// make AJAX call
+		$.ajax({
+			url: '/api/v1/add',
+			type: 'POST',
+			data: {slot: 'a', date: 'b', room: 'c'},
+			success: function(resp) {
+				alert("ajax call was successful!!, resp:" + resp);
+				return true;
+			},
+			error: function(req, status, err) {
+				return false;
+			}
+		});
+
+		return false;
+	}
+*/
+
+
+	// update slot background
+	var updateSlotBackgroundColor = function($slotObject, action) {
+		switch (action) {
+			case "mouse-over":
+				if ($slotObject.text() === "" ) { 
+					$slotObject.css("background-color", "#BDA27E");  // tan		
+					$slotObject.css("cursor", "pointer");	 		
+				} else {
+					$slotObject.css("cursor", "default");
+					$slotObject.css("padding", "0");						 							
+				} 
+				break;
+			case "mouse-out":
+			case "display":
+				if ($slotObject.text() === "" ) { 
+					$slotObject.css("background-color", "#FFFFFF");  // white
+				} else {
+					$slotObject.css("background-color", "#E0CAAE");	 // light tan		
+					$slotObject.css("padding", "0");						 							
+				}
+				break;
+		}
+	}
+
+	// get first Day Of Week
+	var getFirstDayOfWeek = function($dateObj) {
+
+		var weekDay = $dateObj.getDay();
+		var firstDayOfWeek = $dateObj.clone();
+		switch (weekDay) {
+			case 0: //"Sun"
+				// the date is Sunday, so return same date as firstDayOfWeek
+				break;
+			case 1: //"Mon"
+				$firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 1);
+				break;
+			case 2: //"Tue"
+				firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 2);
+				break;
+			case 3: //"Wed"
+				firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 3);
+				break;
+			case 4: //"Thu"
+				firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 4);
+				break;
+			case 5: //"Fri"
+				firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 5);
+				break;
+			case 6: //"Sat"
+				firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 6);
+				break;
+		}
+		return firstDayOfWeek;
+	}
+
+	// return Date in following format: ddd M/D for the schedule column header
+	var getDateColumnTitle = function($dateObj) {
+		return $dateObj.toLocaleDateString("en-US", {weekday: "short"}) + " " + $dateObj.toLocaleDateString("en-US", {month: "numeric", day: "numeric"});
+	}
+
+	// calculate each date of the week
+	var getWeekDaysArray = function(firstDayOfWeek) {
+		 var datesArray = [];
+		 var newDate = firstDayOfWeek.clone();
+
+		 // populate each day of the week in datesArray
+		 for (i=0;i<=6;i++) {
+			newDate.setDate(firstDayOfWeek.getDate() + i);
+			datesArray[i] = newDate.clone();
+		 }
+		 return datesArray;
+	}
+
+	// update Date, month and year displayed between the prev and next buttons and also the dates in each column of the calendar
+	var updateDatesOnCalendar = function(firstDayOfWeek, datesArray) {  //firstDayOfWeek is a Date object
+
+		var firstDateOfWeek_day = firstDayOfWeek.toLocaleDateString("en-US", {day: "numeric"});
+		var firstDateOfWeek_month = firstDayOfWeek.toLocaleDateString("en-US", {month: "short"});
+		var firstDateOfWeek_year = firstDayOfWeek.toLocaleDateString("en-US", {year: "numeric"});
+
+		var lastDateOfWeek = firstDayOfWeek.clone();
+		lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+		var lastDateOfWeek_day = lastDateOfWeek.toLocaleDateString("en-US", {day: "numeric"});
+		var lastDateOfWeek_month = lastDateOfWeek.toLocaleDateString("en-US", {month: "short"});
+		var lastDateOfWeek_year = lastDateOfWeek.toLocaleDateString("en-US", {year: "numeric"});		
+
+		// update the date, month and year between prev and next buttons
+		var currentWeekString = "";
+		if (firstDateOfWeek_month === lastDateOfWeek_month) {
+			currentWeekString = firstDateOfWeek_month + " " + firstDateOfWeek_day + " - " + lastDateOfWeek_day + ", " + firstDateOfWeek_year;			
+		} else if (firstDateOfWeek_year === lastDateOfWeek_year) {
+			currentWeekString = firstDateOfWeek_month + " " + firstDateOfWeek_day + " - " + lastDateOfWeek_month + " " + lastDateOfWeek_day + ", " + firstDateOfWeek_year;			
+		} else {
+			currentWeekString = firstDateOfWeek_month + " " + firstDateOfWeek_day + ", " +  firstDateOfWeek_year + " - " + lastDateOfWeek_month + " " + lastDateOfWeek_day + ", " + lastDateOfWeek_year;						
+		}
+		$(".completeWeek").text(currentWeekString);
+
+		// update days inside calendar column headers
+		var idValue = "";
+		for (i=0;i<=6;i++) {
+			switch (i) {
+				case 0:
+					idValue = "sun";
+					break;
+				case 1:
+					idValue = "mon";
+					break;
+				case 2:
+					idValue = "tue";
+					break;
+				case 3:
+					idValue = "wed";
+					break;
+				case 4:
+					idValue = "thu";
+					break;
+				case 5:
+					idValue = "fri";
+					break;
+				case 6:
+					idValue = "sat";
+					break;
+			}
+			$("#" + idValue).text(getDateColumnTitle(datesArray[i]));
+		}
+
+	}
+
+
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	// +++++++++++++++++++++++++ M A I N ++++++++++++++++++++++++++++
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+	// Grab username
+	var userName = "Giovanna";
+
+	// Set room name
+	var room = "Room XYZ";
+	$(".resourceName").text(room);
+
+	// Set slots arrays
+	var slotClassArray = ['time-12am-1','time-12am-2','time-1am-1','time-1am-2','time-2am-1','time-2am-2','time-3am-1','time-3am-2','time-4am-1','time-4am-2','time-5am-1','time-5am-2','time-6am-1','time-6am-2','time-7am-1','time-7am-2','time-8am-1','time-8am-2','time-9am-1','time-9am-2','time-10am-1','time-10am-2','time-11am-1','time-11am-2','time-12pm-1','time-12pm-2','time-1pm-1','time-1pm-2','time-2pm-1','time-2pm-2','time-3pm-1','time-3pm-2','time-4pm-1','time-4pm-2','time-5pm-1','time-5pm-2','time-6pm-1','time-6pm-2','time-7pm-1','time-7pm-2','time-8pm-1','time-8pm-2','time-9pm-1','time-9pm-2','time-10pm-1','time-10pm-2','time-11pm-1','time-11pm-2'];
+
+	// Initial Display
+	var today = new Date();
+	var firstDayOfWeek = getFirstDayOfWeek(today);
+	var datesArray = getWeekDaysArray(firstDayOfWeek);
+	
+	updateDatesOnCalendar(firstDayOfWeek, datesArray);	
+	fillOutSlotFromDB(datesArray, room);
+
+	// Initially disable prev button
+	$(".prevButton").addClass("disabled");
+
+	// Prev Week button
+	$(".prevButton").click(function(e){
+		e.preventDefault();
+		if (today < firstDayOfWeek) {
+			firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 7);
+			datesArray = getWeekDaysArray(firstDayOfWeek);
+			updateDatesOnCalendar(firstDayOfWeek, datesArray);
+			$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
+			if (today > firstDayOfWeek) {
+				$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
+			}			
+		} 
+	});
+
+	// Next Week button
+	$(".nextButton").click(function(e){
+		e.preventDefault();		
+		// set firstDayOfWeek to 1 week ahead and update dates on calendar
+		firstDayOfWeek.setDate(firstDayOfWeek.getDate() + 7);
+		datesArray = getWeekDaysArray(firstDayOfWeek);
+		updateDatesOnCalendar(firstDayOfWeek, datesArray);
+		
+		$(".prevButton").removeClass("disabled");  // enable prev button in case it was disabled
+
+		// calculate date 30 days from today
+		var todayPlus30days = today.clone();
+		todayPlus30days.setDate(todayPlus30days.getDate() + 30);
+		// calculate last date of current week
+		var lastDateOfWeek = firstDayOfWeek.clone();
+		lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+
+		if (todayPlus30days < lastDateOfWeek) {
+			$(".nextButton").addClass("disabled"); // disable next button when the current week is beyond today + 30 days			
+		}
+				
+	});
+
+	// Slot "initial appearance" and "hover"
+	$(".table td").each(function(){   // ---- Slot "initial appearance"
+		updateSlotBackgroundColor($(this), "display");
+	})
+	.hover(function(){                // ---- Slot "hover" logic
+		// mouse over
+		updateSlotBackgroundColor($(this), "mouse-over");
+	},
+	function(){  
+		//mouse out
+		updateSlotBackgroundColor($(this), "mouse-out");
+	})
+	.click(function(){                // ---- Slot "click" logic 
+		if ($(this).text() === "") {
+/*			
+			if (bookSlot($(this))) {
+				updateSlotBackgroundColor($(this), "display");
+			}
+*/			
+		} 
+	});
+
+</script>
+
+</html>    

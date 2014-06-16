@@ -1,0 +1,34 @@
+
+.hd-logo {
+    background: transparent;   
+    margin: 2em 4em 1em 4em;
+}
+.header {
+    border-bottom: 0.5em solid #a3203f;
+} 
+
+.resourceName {
+    margin: 1em 0 1.5em 4em; 
+    font-size: 120%;
+}
+
+.weekNavTable {
+    margin: auto;
+    margin-bottom: 2em;
+}
+
+.weekNavTable td {
+    vertical-align: middle;
+    /*text-align: center;*/
+    padding: 0.5em; 
+}
+.completeWeek {
+    font-size: 120%;
+}
+
+.schedule td {
+    font-size: 0.8em;
+    vertical-align: center;
+    text-align: center;
+}
+
