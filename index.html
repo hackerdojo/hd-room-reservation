@@ -251,6 +251,7 @@
 		var respLength = 0;
 		var slotCell = " ";
 		var slotDay = " ";
+		var slotDate;
 
 		for (i=0;i<datesArrayLength;i++) {
 			dateParam = convertDateToString(datesArray[i]);
@@ -268,8 +269,8 @@
 
 					for (i=0;i<respLength;i++) {
 						console.log("slot date:" + resp[i].date + "slot_number:" + resp[i].slot + ", slot_owner:" + resp[i].owner);	
-
-						// weekDay = resp[i].date.getDay();
+						var mydate = new Date(resp[i].date);
+						weekDay = mydate.getDay();
 						switch (weekDay) {
 							case 0: //"Sun"
 								slotDay = "sunSlot";

@@ -17,6 +17,11 @@ def make_date(date_string):
   day = int(elems[2])
   return datetime.date(year, month, day)
 
+def convert_date_to_string(dateObj):
+  dateString = str(dateObj.year) + "-" + str(dateObj.month) + "-" + str(dateObj.day)
+  return dateString
+
+
 # Handler that allows the user to authenticate, thus allowing the same client to
 # perform api requests.
 class LoginHandler(webapp2.RequestHandler):
@@ -73,8 +78,9 @@ class ScheduleHandler(ApiHandler):
    
     response = []
     for slot in slots:
-      # data = {"date": slot.date, "slot": slot.slot, "owner": slot.owner}
-      data = {"slot": slot.slot, "owner": slot.owner}
+      dateParam = convert_date_to_string(slot.date)
+      data = {"date": dateParam, "slot": slot.slot, "owner": slot.owner}
+      # data = {"slot": slot.slot, "owner": slot.owner}
 
       response.append(data)
 
