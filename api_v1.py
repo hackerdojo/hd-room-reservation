@@ -73,7 +73,9 @@ class ScheduleHandler(ApiHandler):
    
     response = []
     for slot in slots:
-      data = {slot.slot: slot.owner}
+      # data = {"date": slot.date, "slot": slot.slot, "owner": slot.owner}
+      data = {"slot": slot.slot, "owner": slot.owner}
+
       response.append(data)
 
     self.response.out.write(json.dumps(response))

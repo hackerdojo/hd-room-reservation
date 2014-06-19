@@ -240,25 +240,73 @@
 		return dateString;
 	}
 
-
 	// -------------------------------------------------- //
 	// fill slot with corresponding user name (Ajax call)
 	// -------------------------------------------------- //
-	var fillOutSlotFromDB = function(datesArray, roomParam) {
+	var fillOutSlotFromDB = function(datesArray, slotArray, roomParam) {
 		// make AJAX call
 		var datesArrayLength = datesArray.length;
-		var dateParam = "";
+		var weekDay = " ";
+		var dateParam = " ";
+		var respLength = 0;
+		var slotCell = " ";
+		var slotDay = " ";
 
 		for (i=0;i<datesArrayLength;i++) {
 			dateParam = convertDateToString(datesArray[i]);
+
 			$.ajax({
 				url: '/api/v1/schedule',
 				type: 'GET',
 				data: {date: dateParam, room: roomParam},
 				dataType: 'json',
 				success: function(resp) {
-					// alert("ajax call was successful!!, resp:" + resp);
-					alert("resp:" + resp);
+
+					respLength = resp.length;
+					console.log("resp:", resp);
+					console.log("respLength:" + respLength);
+
+					for (i=0;i<respLength;i++) {
+						console.log("slot date:" + resp[i].date + "slot_number:" + resp[i].slot + ", slot_owner:" + resp[i].owner);	
+
+						// weekDay = resp[i].date.getDay();
+						switch (weekDay) {
+							case 0: //"Sun"
+								slotDay = "sunSlot";
+								break;
+							case 1: //"Mon"
+								slotDay = "monSlot";
+								break;
+							case 2: //"Tue"
+								slotDay = "tueSlot";
+								break;
+							case 3: //"Wed"
+								slotDay = "wedSlot";
+								break;
+							case 4: //"Thu"
+								slotDay = "thuSlot";
+								break;
+							case 5: //"Fri"
+								slotDay = "friSlot";
+								break;
+							case 6: //"Sat"
+								slotDay = "satSlot";
+								break;
+							default:
+								slotDay = "none";	
+						}
+
+						console.log("resp[i].date:" + resp[i].date + ", weekDay:" + weekDay);
+
+						if (resp[i].slot !== "") {
+							// slot_number corresponds to the index of the slot from slotArray
+							slotCell = slotArray[resp[i].slot];	
+							// Locate the slot and add owner name to that slot
+							console.log("slotCell:" + slotCell + ", slotDay:" + slotDay);
+							$("tr." + slotCell).find("td." + slotDay).text(resp[i].owner);
+						}
+					}	
+					
 				},
 				error: function(req, status, err) {
 
@@ -484,7 +532,7 @@
 	var datesArray = getWeekDaysArray(firstDayOfWeek);
 	
 	updateDatesOnCalendar(firstDayOfWeek, datesArray);	
-	fillOutSlotFromDB(datesArray, room);
+	fillOutSlotFromDB(datesArray, slotArray, room);
 
 	// Initially disable prev button
 	$(".prevButton").addClass("disabled");
