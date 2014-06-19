@@ -253,6 +253,11 @@
 		var slotDay = " ";
 		var slotDate;
 
+		// Clear content from calendar
+		$("table.schedule td").text("").each( function() {
+			updateSlotBackgroundColor($(this), "display");
+		});
+
 		for (i=0;i<datesArrayLength;i++) {
 			dateParam = convertDateToString(datesArray[i]);
 
@@ -264,11 +269,8 @@
 				success: function(resp) {
 
 					respLength = resp.length;
-					console.log("resp:", resp);
-					console.log("respLength:" + respLength);
-
 					for (i=0;i<respLength;i++) {
-						console.log("slot date:" + resp[i].date + "slot_number:" + resp[i].slot + ", slot_owner:" + resp[i].owner);	
+						// console.log("slot date:" + resp[i].date + "slot_number:" + resp[i].slot + ", slot_owner:" + resp[i].owner);	
 						var mydate = new Date(resp[i].date);
 						weekDay = mydate.getDay();
 						switch (weekDay) {
@@ -297,14 +299,14 @@
 								slotDay = "none";	
 						}
 
-						console.log("resp[i].date:" + resp[i].date + ", weekDay:" + weekDay);
-
 						if (resp[i].slot !== "") {
 							// slot_number corresponds to the index of the slot from slotArray
 							slotCell = slotArray[resp[i].slot];	
 							// Locate the slot and add owner name to that slot
 							console.log("slotCell:" + slotCell + ", slotDay:" + slotDay);
-							$("tr." + slotCell).find("td." + slotDay).text(resp[i].owner);
+							var $currentSlotObj = $("tr." + slotCell).find("td." + slotDay);
+							$currentSlotObj.text(resp[i].owner);
+							updateSlotBackgroundColor($currentSlotObj, "display");
 						}
 					}	
 					
@@ -383,6 +385,7 @@
 				if ($slotObject.text() === "" ) { 
 					$slotObject.css("background-color", "#BDA27E");  // tan		
 					$slotObject.css("cursor", "pointer");	 		
+					$slotObject.css("padding", "0");						 							
 				} else {
 					$slotObject.css("cursor", "default");
 					$slotObject.css("padding", "0");						 							
@@ -392,6 +395,7 @@
 			case "display":
 				if ($slotObject.text() === "" ) { 
 					$slotObject.css("background-color", "#FFFFFF");  // white
+					$slotObject.css("padding", "0");						 							
 				} else {
 					$slotObject.css("background-color", "#E0CAAE");	 // light tan		
 					$slotObject.css("padding", "0");						 							
@@ -512,6 +516,14 @@
 
 	}
 
+	// -------------------------------------------------- //
+	// Update both, dates and content
+	// -------------------------------------------------- //
+	var updateCalendar = function(firstDayOfWeek, datesArray, slotArray, room) {
+		updateDatesOnCalendar(firstDayOfWeek, datesArray);	
+		fillOutSlotFromDB(datesArray, slotArray, room);
+	}
+
 
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	// +++++++++++++++++++++++++ M A I N ++++++++++++++++++++++++++++
@@ -530,10 +542,8 @@
 	// Initial Display
 	var today = new Date();
 	var firstDayOfWeek = getFirstDayOfWeek(today);
-	var datesArray = getWeekDaysArray(firstDayOfWeek);
-	
-	updateDatesOnCalendar(firstDayOfWeek, datesArray);	
-	fillOutSlotFromDB(datesArray, slotArray, room);
+	var datesArray = getWeekDaysArray(firstDayOfWeek);	
+	updateCalendar(firstDayOfWeek, datesArray, slotArray, room);
 
 	// Initially disable prev button
 	$(".prevButton").addClass("disabled");
@@ -544,7 +554,7 @@
 		if (today < firstDayOfWeek) {
 			firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 7);
 			datesArray = getWeekDaysArray(firstDayOfWeek);
-			updateDatesOnCalendar(firstDayOfWeek, datesArray);
+			updateCalendar(firstDayOfWeek, datesArray, slotArray, room);
 			$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
 			if (today > firstDayOfWeek) {
 				$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
@@ -558,7 +568,8 @@
 		// set firstDayOfWeek to 1 week ahead and update dates on calendar
 		firstDayOfWeek.setDate(firstDayOfWeek.getDate() + 7);
 		datesArray = getWeekDaysArray(firstDayOfWeek);
-		updateDatesOnCalendar(firstDayOfWeek, datesArray);
+		// updateDatesOnCalendar(firstDayOfWeek, datesArray);
+		updateCalendar(firstDayOfWeek, datesArray, slotArray, room);
 		
 		$(".prevButton").removeClass("disabled");  // enable prev button in case it was disabled
 
