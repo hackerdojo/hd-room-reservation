@@ -6,7 +6,7 @@
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/ico" href="http://cdn.hackerdojo.com/favicon.ico" />
-	<link rel="stylesheet" type="text/css" href="/static/style.css" />
+	<link rel="stylesheet" type="text/css" href="static/style.css" />
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 
 	<title>Room Reservation</title>
@@ -15,7 +15,7 @@
 <body>
 	<div class="container">
 		<div class="header">
-			<img src="/static/hacker-dojo.png" class="img-responsive hd-logo"/>
+			<img src="static/hacker-dojo.png" class="img-responsive hd-logo"/>
 		</div>		
 		<div class="resourceName"></div>
 		<div class="container">
@@ -226,19 +226,24 @@
     </ul>	
 </body>	
 
-<script src="/static/jquery-1.11.0.js"></script>
-<script type="text/javascript" src="/static/date.js"></script>
+<script src="static/jquery-1.11.0.js"></script>
+<!--<script src="http://code.jquery.com/jquery-latest.min.js"></script>-->
+<script type="text/javascript" src="static/date.js"></script>
 
 <script>
 
+	// -------------------------------------------------- //
 	// Transform date object into string in the following format: YYYY-MM-DD
+	// -------------------------------------------------- //
 	var convertDateToString = function(dateObj) {
 		var dateString = dateObj.toLocaleDateString("en-US", {year: "numeric"}) + "-" + dateObj.toLocaleDateString("en-US", {month: "numeric"}) + "-" + dateObj.toLocaleDateString("en-US", {day: "numeric"});
 		return dateString;
 	}
 
 
-	// fill slot with corresponding user name
+	// -------------------------------------------------- //
+	// fill slot with corresponding user name (Ajax call)
+	// -------------------------------------------------- //
 	var fillOutSlotFromDB = function(datesArray, roomParam) {
 		// make AJAX call
 		var datesArrayLength = datesArray.length;
@@ -250,8 +255,10 @@
 				url: '/api/v1/schedule',
 				type: 'GET',
 				data: {date: dateParam, room: roomParam},
+				dataType: 'json',
 				success: function(resp) {
 					// alert("ajax call was successful!!, resp:" + resp);
+					alert("resp:" + resp);
 				},
 				error: function(req, status, err) {
 
@@ -260,26 +267,53 @@
 		}	
 	}
 
-	// book slot
-/*
-	var bookSlot = function($slotObject) {
-		$slotObject.text(userName);
+	// -------------------------------------------------- //
+	// Book slot Ajax call
+	// -------------------------------------------------- //
+	var bookSlot = function($slotObject, slotArray, roomParam) {
+		//$slotObject.text(userName);
 
-		// set parameters to send in th Ajax call
-		var slotWeekDay = $slotObject.attr("class");
 		var dateParam =  "";
+		var slotParam = "";
+		// set parameters to send in the Ajax call
+		var slotWeekDay = $slotObject.attr("class");
+		var hourlySlot = $slotObject.closest("tr").attr("class");
+		slotParam = $.inArray(hourlySlot, slotArray);  // returns the index where hourlySlot was found in slotArray. This will correspond to the slot number.
+
 		switch (slotWeekDay) {
 			case "sunSlot":
+				dateParam = convertDateToString(datesArray[0]);
 				break;
+			case "monSlot":
+				dateParam = convertDateToString(datesArray[1]);
+				break;
+			case "tueSlot":
+				dateParam = convertDateToString(datesArray[2]);
+				break;
+			case "wedSlot":
+				dateParam = convertDateToString(datesArray[3]);
+				break;
+			case "thuSlot":
+				dateParam = convertDateToString(datesArray[4]);
+				break;
+			case "friSlot":
+				dateParam = convertDateToString(datesArray[5]);
+				break;
+			case "satSlot":
+				dateParam = convertDateToString(datesArray[6]);
+				break;	
+			default:
+				dateParam = convertDateToString(today);				
+				break;	
 		}
-
 		// make AJAX call
 		$.ajax({
 			url: '/api/v1/add',
 			type: 'POST',
-			data: {slot: 'a', date: 'b', room: 'c'},
+			data: {slot: slotParam, date: dateParam, room: roomParam},
 			success: function(resp) {
 				alert("ajax call was successful!!, resp:" + resp);
+				$slotObject.text("Booked!");
 				return true;
 			},
 			error: function(req, status, err) {
@@ -289,10 +323,11 @@
 
 		return false;
 	}
-*/
 
 
+	// -------------------------------------------------- //
 	// update slot background
+	// -------------------------------------------------- //
 	var updateSlotBackgroundColor = function($slotObject, action) {
 		switch (action) {
 			case "mouse-over":
@@ -316,7 +351,9 @@
 		}
 	}
 
+	// -------------------------------------------------- //
 	// get first Day Of Week
+	// -------------------------------------------------- //
 	var getFirstDayOfWeek = function($dateObj) {
 
 		var weekDay = $dateObj.getDay();
@@ -347,12 +384,16 @@
 		return firstDayOfWeek;
 	}
 
+	// -------------------------------------------------- //
 	// return Date in following format: ddd M/D for the schedule column header
+	// -------------------------------------------------- //
 	var getDateColumnTitle = function($dateObj) {
 		return $dateObj.toLocaleDateString("en-US", {weekday: "short"}) + " " + $dateObj.toLocaleDateString("en-US", {month: "numeric", day: "numeric"});
 	}
 
+	// -------------------------------------------------- //
 	// calculate each date of the week
+	// -------------------------------------------------- //
 	var getWeekDaysArray = function(firstDayOfWeek) {
 		 var datesArray = [];
 		 var newDate = firstDayOfWeek.clone();
@@ -365,7 +406,9 @@
 		 return datesArray;
 	}
 
+	// -------------------------------------------------- //
 	// update Date, month and year displayed between the prev and next buttons and also the dates in each column of the calendar
+	// -------------------------------------------------- //
 	var updateDatesOnCalendar = function(firstDayOfWeek, datesArray) {  //firstDayOfWeek is a Date object
 
 		var firstDateOfWeek_day = firstDayOfWeek.toLocaleDateString("en-US", {day: "numeric"});
@@ -433,7 +476,7 @@
 	$(".resourceName").text(room);
 
 	// Set slots arrays
-	var slotClassArray = ['time-12am-1','time-12am-2','time-1am-1','time-1am-2','time-2am-1','time-2am-2','time-3am-1','time-3am-2','time-4am-1','time-4am-2','time-5am-1','time-5am-2','time-6am-1','time-6am-2','time-7am-1','time-7am-2','time-8am-1','time-8am-2','time-9am-1','time-9am-2','time-10am-1','time-10am-2','time-11am-1','time-11am-2','time-12pm-1','time-12pm-2','time-1pm-1','time-1pm-2','time-2pm-1','time-2pm-2','time-3pm-1','time-3pm-2','time-4pm-1','time-4pm-2','time-5pm-1','time-5pm-2','time-6pm-1','time-6pm-2','time-7pm-1','time-7pm-2','time-8pm-1','time-8pm-2','time-9pm-1','time-9pm-2','time-10pm-1','time-10pm-2','time-11pm-1','time-11pm-2'];
+	var slotArray = ['time-12am-1','time-12am-2','time-1am-1','time-1am-2','time-2am-1','time-2am-2','time-3am-1','time-3am-2','time-4am-1','time-4am-2','time-5am-1','time-5am-2','time-6am-1','time-6am-2','time-7am-1','time-7am-2','time-8am-1','time-8am-2','time-9am-1','time-9am-2','time-10am-1','time-10am-2','time-11am-1','time-11am-2','time-12pm-1','time-12pm-2','time-1pm-1','time-1pm-2','time-2pm-1','time-2pm-2','time-3pm-1','time-3pm-2','time-4pm-1','time-4pm-2','time-5pm-1','time-5pm-2','time-6pm-1','time-6pm-2','time-7pm-1','time-7pm-2','time-8pm-1','time-8pm-2','time-9pm-1','time-9pm-2','time-10pm-1','time-10pm-2','time-11pm-1','time-11pm-2'];
 
 	// Initial Display
 	var today = new Date();
@@ -497,11 +540,11 @@
 	})
 	.click(function(){                // ---- Slot "click" logic 
 		if ($(this).text() === "") {
-/*			
-			if (bookSlot($(this))) {
+			
+			if (bookSlot($(this), slotArray, room)) {
 				updateSlotBackgroundColor($(this), "display");
 			}
-*/			
+			
 		} 
 	});
 
