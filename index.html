@@ -253,9 +253,9 @@
 		var slotDay = " ";
 		var slotDate;
 
-		// Clear content from calendar
+		// Clear all content from calendar
 		$("table.schedule td").text("").each( function() {
-			updateSlotBackgroundColor($(this), "display");
+			updateSlotStyle($(this), "display");
 		});
 
 		for (i=0;i<datesArrayLength;i++) {
@@ -306,7 +306,7 @@
 							// console.log("slotCell:" + slotCell + ", slotDay:" + slotDay);
 							var $currentSlotObj = $("tr." + slotCell).find("td." + slotDay);
 							$currentSlotObj.text(resp[i].owner);
-							updateSlotBackgroundColor($currentSlotObj, "display");
+							updateSlotStyle($currentSlotObj, "display");
 						}
 					}	
 					
@@ -321,7 +321,7 @@
 	// -------------------------------------------------- //
 	// Book slot Ajax call
 	// -------------------------------------------------- //
-	var bookSlot = function($slotObject, slotArray, roomParam) {
+	var bookSlot = function($slotObject, slotArray, roomParam, userName) {
 		//$slotObject.text(userName);
 
 		var dateParam =  "";
@@ -363,8 +363,7 @@
 			type: 'POST',
 			data: {slot: slotParam, date: dateParam, room: roomParam},
 			success: function(resp) {
-				alert("ajax call was successful!!, resp:" + resp);
-				$slotObject.text("Booked!");
+				$slotObject.text(userName);
 				return true;
 			},
 			error: function(req, status, err) {
@@ -379,30 +378,42 @@
 	// -------------------------------------------------- //
 	// update slot background
 	// -------------------------------------------------- //
-	var updateSlotBackgroundColor = function($slotObject, action) {
+	var updateSlotStyle = function($slotObject, action) {
 		switch (action) {
 			case "mouse-over":
 				if ($slotObject.text() === "" ) { 
-					$slotObject.css("background-color", "#BDA27E");  // tan		
-					$slotObject.css("cursor", "pointer");	 		
-					$slotObject.css("padding", "0");						 							
+					$slotObject.removeClass("displayEmptySlot");	
+					$slotObject.removeClass("displayBookedSlot");	
+					$slotObject.removeClass("mouseOverBookedSlot");	
+					$slotObject.addClass("mouseOverEmptySlot");	
 				} else {
-					$slotObject.css("cursor", "default");
-					$slotObject.css("padding", "0");						 							
+					$slotObject.removeClass("displayEmptySlot");	
+					$slotObject.removeClass("displayBookedSlot");	
+					$slotObject.removeClass("mouseOverEmptySlot");	
+					$slotObject.addClass("mouseOverBookedSlot");						
 				} 
 				break;
 			case "mouse-out":
 			case "display":
+				console.log("action:" + action)
 				if ($slotObject.text() === "" ) { 
-					$slotObject.css("background-color", "#FFFFFF");  // white
-					$slotObject.css("padding", "0");						 							
+					$slotObject.removeClass("displayBookedSlot");	
+					$slotObject.removeClass("mouseOverEmptySlot");	
+					$slotObject.removeClass("mouseOverBookedSlot");	
+					$slotObject.addClass("displayEmptySlot");	
+					console.log("text is blank, so adding displayEmptySlot...");
 				} else {
-					$slotObject.css("background-color", "#E0CAAE");	 // light tan		
-					$slotObject.css("padding", "0");						 							
+					$slotObject.removeClass("displayEmptySlot");	
+					$slotObject.removeClass("mouseOverEmptySlot");	
+					$slotObject.removeClass("mouseOverBookedSlot");	
+					$slotObject.addClass("displayBookedSlot");	
+					console.log("text is NOT blank, so adding displayBookedSlot...");
 				}
 				break;
 		}
 	}
+
+
 
 	// -------------------------------------------------- //
 	// get first Day Of Week
@@ -587,23 +598,20 @@
 				
 	});
 
-	// Slot "initial appearance" and "hover"
-	$(".table td").each(function(){   // ---- Slot "initial appearance"
-		updateSlotBackgroundColor($(this), "display");
-	})
-	.hover(function(){                // ---- Slot "hover" logic
+	// Slot "hover" and "click" actions	
+	$(".schedule td").hover(function(){    // ---- Slot "hover" logic
 		// mouse over
-		updateSlotBackgroundColor($(this), "mouse-over");
+		updateSlotStyle($(this), "mouse-over");
 	},
 	function(){  
 		//mouse out
-		updateSlotBackgroundColor($(this), "mouse-out");
+		updateSlotStyle($(this), "mouse-out");
 	})
 	.click(function(){                // ---- Slot "click" logic 
 		if ($(this).text() === "") {
 			
-			if (bookSlot($(this), slotArray, room)) {
-				updateSlotBackgroundColor($(this), "display");
+			if (bookSlot($(this), slotArray, room, userName)) {
+				updateSlotStyle($(this), "display");
 			}
 			
 		} 

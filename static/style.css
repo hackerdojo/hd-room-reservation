@@ -31,4 +31,23 @@
     vertical-align: center;
     text-align: center;
 }
+.displayEmptySlot {
+    background-color: #FFFFFF;  /* white */
+    cursor: default;
+}
+.displayBookedSlot {
+    background-color: #E0CAAE;  /* light tan */
+    cursor: default;
+    padding: 0px  !important;
+}
+.mouseOverEmptySlot {
+    background-color: #BDA27E;  /* tan */
+    cursor: pointer;
+}
+.mouseOverBookedSlot {
+    background-color: #E0CAAE;  /* light tan */
+    cursor: default;
+    padding: 0px  !important;
+}
+
 

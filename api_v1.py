@@ -17,6 +17,7 @@ def make_date(date_string):
   day = int(elems[2])
   return datetime.date(year, month, day)
 
+# Converts a date object to YYYY-MM-DD
 def convert_date_to_string(dateObj):
   dateString = str(dateObj.year) + "-" + str(dateObj.month) + "-" + str(dateObj.day)
   return dateString
