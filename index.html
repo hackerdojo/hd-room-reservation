@@ -303,7 +303,7 @@
 							// slot_number corresponds to the index of the slot from slotArray
 							slotCell = slotArray[resp[i].slot];	
 							// Locate the slot and add owner name to that slot
-							console.log("slotCell:" + slotCell + ", slotDay:" + slotDay);
+							// console.log("slotCell:" + slotCell + ", slotDay:" + slotDay);
 							var $currentSlotObj = $("tr." + slotCell).find("td." + slotDay);
 							$currentSlotObj.text(resp[i].owner);
 							updateSlotBackgroundColor($currentSlotObj, "display");
@@ -416,7 +416,7 @@
 				// the date is Sunday, so return same date as firstDayOfWeek
 				break;
 			case 1: //"Mon"
-				$firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 1);
+				firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 1);
 				break;
 			case 2: //"Tue"
 				firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 2);
@@ -453,9 +453,10 @@
 
 		 // populate each day of the week in datesArray
 		 for (i=0;i<=6;i++) {
-			newDate.setDate(firstDayOfWeek.getDate() + i);
 			datesArray[i] = newDate.clone();
+			newDate.setDate(newDate.getDate() + 1);
 		 }
+
 		 return datesArray;
 	}
 
