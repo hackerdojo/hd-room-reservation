@@ -1,6 +1,7 @@
 # Handles a REST api for the backend.
 
 import datetime
+import logging
 import json
 import webapp2
 
@@ -35,6 +36,7 @@ class LoginHandler(webapp2.RequestHandler):
       # We'll end up back here after they authenticate.
       return
 
+    logging.info("User %s logged in." %s (user.nickname()))
     if "@hackerdojo.com" not in user.email():
       # Not a hackerdojo member.
       self.redirect(users.create_logout_url("/login"))
@@ -61,6 +63,8 @@ class ApiHandler(webapp2.RequestHandler):
         self.response.out.write("Error: Requires parameters: " + str(args))
         return None
       ret.append(value)
+
+    logging.debug("Got parameters: %s." % (str(ret)))
     return ret
 
 # Handler for schedule requests.
@@ -68,7 +72,7 @@ class ScheduleHandler(ApiHandler):
   def get(self):
     if not self._check_authentication():
       return
-    
+
     params = self._get_parameters("date", "room")
     if not params:
       return
@@ -112,12 +116,14 @@ class BookingHandler(ApiHandler):
     advance = advance.days
     if advance > self.advance_booking:
       self.response.out.write(False)
+      logging.warning("User booked too far in advance.")
       return
 
     # Make sure we're not double-booking.
     if Slot.query(ndb.AND(Slot.date == date, Slot.room == room,
         Slot.slot == slot)).get():
       self.response.out.write(False)
+      logging.warning("User double-booked slot %d." % (slot))
       return
 
     name = users.get_current_user().nickname()
@@ -131,16 +137,19 @@ class BookingHandler(ApiHandler):
       if (abs(int(prop.slot) - slot) != 1 and \
           abs(int(prop.slot) - slot) <= empty):
         self.response.out.write(False)
+        logging.warning("User did not leave enough space between blocks.")
         return
 
     slot = Slot(owner = name, slot = slot, date = date, room = room)
     slot.put()
+    logging.info("Saved slot.")
 
     self.response.out.write(True)
 
 # Handler for removing a reservation on a slot.
 class RemoveHandler(ApiHandler):
   def post(self):
+    # TODO (danielp): Return error codes here.
     if not self._check_authentication():
       return
 
@@ -150,13 +159,39 @@ class RemoveHandler(ApiHandler):
     slot = int(params[0])
     date = make_date(params[1])
     
-    prop = Slot.query(ndb.AND(Slot.date == date, Slot.slot == slot)).get()
-    if prop:
-      prop.key.delete()
+    props = Slot.query(Slot.date == date).order(Slot.slot).fetch()
+    block_edges = []
+    block_started = False
+    found = None
+    for prop in props:
+      # If we are deleting a slot, make sure we don't leave the schedule in an
+      # illegal state.
+      if (not block_edges or prop.slot != block_edges[-1] + 1):
+        # The beginning of a new block.
+        block_edges.append(prop.slot)
+        block_started = True
+
+      else:
+        if block_started:
+          block_started = False
+          block_edges.append(prop.slot)
+        else:
+          block_edges[-1] = prop.slot
+
+      if prop.slot == slot:
+        # The one we want to remove does indeed exist.
+        logging.debug("Slot %d exists." % (slot))
+        found = prop
+
+    logging.debug("Block edges: %s" % (str(block_edges)))
+    if (found and found.slot in block_edges):
+      found.key.delete()
       self.response.out.write(True)
+      logging.info("Deleted slot.")
       return
 
     self.response.out.write(False)
+    logging.warning("Could not delete slot.")
 
 app = webapp2.WSGIApplication([
     ("/login", LoginHandler),
