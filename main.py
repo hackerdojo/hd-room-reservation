@@ -39,9 +39,12 @@ class HomePage(webapp2.RequestHandler):
     slots = Slot.query().order(-Slot.slot).fetch(10)
     
     # Set values to pass to HTML template.
+    # added 'days' & 'hours' values - Jun21
     template_values = {
       'user': user,
       'slots': slots,
+      'days': range(0,7),
+      'hours': range(0, 24),
     }
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render(template_values))
