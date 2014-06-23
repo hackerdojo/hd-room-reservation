@@ -67,6 +67,42 @@ class ApiHandler(webapp2.RequestHandler):
     logging.debug("Got parameters: %s." % (str(ret)))
     return ret
 
+  # Gets the full name of the user.
+  def _get_name(self):
+    name = users.get_current_user().nickname()
+    name = name.replace(".", " ").title()
+    return name
+
+  # Find booked slots that are on the edges of blocks of booked slots.
+  # Props is a query object.
+  def _find_block_edges(self, props):
+    props = props.order(Slot.slot).fetch()
+
+    block_edges = []
+    block_started = False
+
+    for prop in props:
+      # Non-contiguous.
+      if (not block_edges or prop.slot != block_edges[-1] + 1):
+        if block_started:
+          # If we have a singleton block, we just duplicate it at the end.
+          block_edges.append(block_edges[-1])
+
+        # The beginning of a new block.
+        block_edges.append(prop.slot)
+        block_started = True
+      
+      # Contiguous.
+      else:
+        if block_started:
+          block_started = False
+          block_edges.append(prop.slot)
+        else:
+          block_edges[-1] = prop.slot
+
+    logging.info("Block edges: %s" % (str(block_edges)))
+    return block_edges
+
 # Handler for schedule requests.
 class ScheduleHandler(ApiHandler):
   def get(self):
@@ -126,16 +162,31 @@ class BookingHandler(ApiHandler):
       logging.warning("User double-booked slot %d." % (slot))
       return
 
-    name = users.get_current_user().nickname()
-    name = name.replace(".", " ").title()
-   
+    name = self._get_name()
+       
     # Slots reserved by the same user must be at least 2 hours apart.
     empty = self.empty_time / self.slot_length
     slots = Slot.query(ndb.AND(Slot.date == date, Slot.owner == name,
         Slot.room == room))
-    for prop in slots:
-      if (abs(int(prop.slot) - slot) != 1 and \
-          abs(int(prop.slot) - slot) <= empty):
+
+    block_edges = self._find_block_edges(slots)
+    # Find the edges that are closest to our slot and get rid of everything
+    # else.
+    block_edges.append(slot)
+    block_edges.sort()
+    position = block_edges.index(slot)
+    if position == 0:
+      # This is a special case.
+      block_edges = [block_edges[1]]
+    else:
+      block_edges = block_edges[(position - 1):]
+      block_edges = block_edges[:3]
+      block_edges.remove(slot)
+    
+    for booked_slot in block_edges:
+      logging.info("Booked slot: %d." % (booked_slot))
+      if (abs(int(booked_slot) - slot) != 1 and \
+          abs(int(booked_slot) - slot) <= empty):
         self.response.out.write(False)
         logging.warning("User did not leave enough space between blocks.")
         return
@@ -149,7 +200,6 @@ class BookingHandler(ApiHandler):
 # Handler for removing a reservation on a slot.
 class RemoveHandler(ApiHandler):
   def post(self):
-    # TODO (danielp): Return error codes here.
     if not self._check_authentication():
       return
 
@@ -159,39 +209,31 @@ class RemoveHandler(ApiHandler):
     slot = int(params[0])
     date = make_date(params[1])
     
-    props = Slot.query(Slot.date == date).order(Slot.slot).fetch()
-    block_edges = []
-    block_started = False
-    found = None
-    for prop in props:
-      # If we are deleting a slot, make sure we don't leave the schedule in an
-      # illegal state.
-      if (not block_edges or prop.slot != block_edges[-1] + 1):
-        # The beginning of a new block.
-        block_edges.append(prop.slot)
-        block_started = True
+    name = self._get_name()
 
-      else:
-        if block_started:
-          block_started = False
-          block_edges.append(prop.slot)
-        else:
-          block_edges[-1] = prop.slot
-
-      if prop.slot == slot:
-        # The one we want to remove does indeed exist.
-        logging.debug("Slot %d exists." % (slot))
-        found = prop
-
-    logging.debug("Block edges: %s" % (str(block_edges)))
-    if (found and found.slot in block_edges):
-      found.key.delete()
-      self.response.out.write(True)
-      logging.info("Deleted slot.")
+    # Find the room we're looking for.
+    to_delete = Slot.query(ndb.AND(Slot.date == date, Slot.slot == slot)).get()
+    if not info:
+      error = -101
+      logging.warning("Error %d: Slot not reserved." % (error))
+      self.response.out.write(error)
       return
+    room = to_delete.room
 
-    self.response.out.write(False)
-    logging.warning("Could not delete slot.")
+    props = Slot.query(ndb.AND(Slot.date == date, Slot.owner == name,
+        Slot.room == room))
+    block_edges = self._find_block_edges(props)
+    
+    error = 0
+    if to_delete.slot not in block_edges:
+      error = -102
+      logging.warning("Error %d: Cannot delete slot in middle of block." \
+          % (error))
+    else:
+      found.key.delete()
+      logging.info("Deleted slot.")
+
+    self.response.out.write(error)
 
 app = webapp2.WSGIApplication([
     ("/login", LoginHandler),
