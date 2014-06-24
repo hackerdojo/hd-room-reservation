@@ -40,11 +40,13 @@ class HomePage(webapp2.RequestHandler):
     
     # Set values to pass to HTML template.
     # added 'days' & 'hours' values - Jun21
+    # Pass username in the same format as it is stored in DB - Jun24
     template_values = {
       'user': user,
       'slots': slots,
       'days': range(0,7),
       'hours': range(0, 24),
+      'username': name,
     }
     template = JINJA_ENVIRONMENT.get_template('index.html')
     self.response.write(template.render(template_values))

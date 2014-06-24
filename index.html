@@ -112,7 +112,8 @@
 						if (resp[i].slot !== "") {	
 							// Locate the slot and add owner name to that slot
 							var $currentSlotObj = $("tr[data-hour='" + resp[i].slot + "']").find("td[data-day='" + weekDay + "']");
-							$currentSlotObj.text(resp[i].owner);
+							// $currentSlotObj.text(resp[i].owner);
+							$currentSlotObj.text(resp[i].owner.split("@")[0]);
 							updateSlotStyle($currentSlotObj, "display");
 						}
 					}	
@@ -224,8 +225,6 @@
 					$slotObject.removeClass("mouseOverBookedSlotNoOwner");	
 					$slotObject.addClass("mouseOverEmptySlot");	
 				} else {
-					console.log("userName:" + userName);
-					console.log("$slotObject.text():" + $slotObject.text());
 					if (userName === $slotObject.text()) {
 						$slotObject.removeClass("displayEmptySlot");	
 						$slotObject.removeClass("displayBookedSlot");	
@@ -389,7 +388,8 @@
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 	// Grab username
-	var userName = "{{ user.nickname() }}";
+	var userName = "{{ username }}";
+	userName = userName.split("@")[0];
 
 	// Set room name
 	var room = "Room XYZ";
@@ -457,13 +457,21 @@
 				updateSlotStyle($(this), "display");
 			} else {
 				// display error message
+				alert("Sorry, cannot book this slot");
 			}			
 		} else {
 			// remove reservation
-			if (updateSlot($(this), datesArray, room, userName, "delete")) {
-				updateSlotStyle($(this), "display");
+			console.log("userName:" + userName);
+			console.log("$slotObject.text():" + $(this).text());
+			if (userName === $(this).text()) {
+				if (updateSlot($(this), datesArray, room, userName, "delete")) {
+					updateSlotStyle($(this), "display");
+				} else {
+				// display error message
+				}
 			} else {
 				// display error message
+				alert("You cannot delete this slot!!!!");
 			}			
 		}
 
