@@ -174,10 +174,12 @@
 					data: {slot: slotParam, date: dateParam, room: roomParam},
 					success: function(resp) {
 						if (resp === "True") {
-							console.log("resp:" + resp);
 							$slotObject.text(userName);
+							updateSlotStyle($slotObject, "display");
 							return true;
 						} else {
+							// display error message
+							alert("Sorry, cannot book this slot!! - Add ajax call");
 							return false;
 							}
 					},
@@ -194,10 +196,11 @@
 					data: {slot: slotParam, date: dateParam},
 					success: function(resp) {
 						if (resp === "True") {
-							console.log("resp:" + resp);
 							$slotObject.text("");
+							updateSlotStyle($(this), "display");
 							return true;
 						} else {
+							alert("Error deleting slot");
 							return false;
 							}
 					},
@@ -442,7 +445,7 @@
 	});
 
 	// Slot "hover" and "click" actions	
-	$(".schedule td").hover(function(){    // ---- Slot "hover" logic
+	$(".schedule td").hover(function(){     // ---- Slot "hover" logic
 			// mouse over
 			updateSlotStyle($(this), "mouse-over");
 		},
@@ -451,27 +454,17 @@
 			updateSlotStyle($(this), "mouse-out");
 		}
 	).click(function(){                     // ---- Slot "click" logic 
+		var response;
 		if ($(this).text() === "") {
 			// book/add slot
-			if (updateSlot($(this), datesArray, room, userName, "add")) {
-				updateSlotStyle($(this), "display");
-			} else {
-				// display error message
-				alert("Sorry, cannot book this slot");
-			}			
+			response = updateSlot($(this), datesArray, room, userName, "add");
 		} else {
 			// remove reservation
-			console.log("userName:" + userName);
-			console.log("$slotObject.text():" + $(this).text());
 			if (userName === $(this).text()) {
-				if (updateSlot($(this), datesArray, room, userName, "delete")) {
-					updateSlotStyle($(this), "display");
-				} else {
-				// display error message
-				}
+				response = updateSlot($(this), datesArray, room, userName, "delete");
 			} else {
 				// display error message
-				alert("You cannot delete this slot!!!!");
+				alert("Cannot delete slots from different owner");
 			}			
 		}
 
