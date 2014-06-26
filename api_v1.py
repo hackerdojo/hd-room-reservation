@@ -36,7 +36,7 @@ class LoginHandler(webapp2.RequestHandler):
       # We'll end up back here after they authenticate.
       return
 
-    logging.info("User %s logged in." %s (user.nickname()))
+    logging.info("User %s logged in." % (user.nickname()))
     if "@hackerdojo.com" not in user.email():
       # Not a hackerdojo member.
       self.redirect(users.create_logout_url("/login"))
