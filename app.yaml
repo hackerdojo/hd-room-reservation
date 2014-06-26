@@ -28,6 +28,9 @@ handlers:
 - url: /login
   script: api_v1.app
 
+- url: /logout
+  script: api_v1.app
+
 - url: /.*
   script: main.app
 

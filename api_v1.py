@@ -40,6 +40,14 @@ class LoginHandler(webapp2.RequestHandler):
     if "@hackerdojo.com" not in user.email():
       # Not a hackerdojo member.
       self.redirect(users.create_logout_url("/login"))
+    else:
+      self.redirect("/")
+
+# Shortcut for logging out.
+class LogoutHandler(webapp2.RequestHandler):
+  def get(self):
+    url = users.create_logout_url("/")
+    self.redirect(url)
 
 # Superclass for all API calls.
 class ApiHandler(webapp2.RequestHandler):
@@ -239,6 +247,7 @@ class RemoveHandler(ApiHandler):
 
 app = webapp2.WSGIApplication([
     ("/login", LoginHandler),
+    ("/logout", LogoutHandler),
     ("/api/v1/schedule", ScheduleHandler),
     ("/api/v1/add", BookingHandler),
     ("/api/v1/remove", RemoveHandler),
