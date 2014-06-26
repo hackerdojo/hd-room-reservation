@@ -72,7 +72,8 @@
 	// Transform date object into string in the following format: YYYY-MM-DD
 	// -------------------------------------------------- //
 	var convertDateToString = function(dateObj) {
-		var dateString = dateObj.toLocaleDateString("en-US", {year: "numeric"}) + "-" + dateObj.toLocaleDateString("en-US", {month: "numeric"}) + "-" + dateObj.toLocaleDateString("en-US", {day: "numeric"});
+		// var dateString = dateObj.toLocaleDateString("en-US", {year: "numeric"}) + "-" + dateObj.toLocaleDateString("en-US", {month: "numeric"}) + "-" + dateObj.toLocaleDateString("en-US", {day: "numeric"});
+		var dateString = Date.parse(dateObj.toLocaleDateString("en-US")).toString("yyyy-MM-dd");
 		return dateString;
 	}
 
@@ -106,7 +107,8 @@
 
 					respLength = resp.length;
 					for (i=0;i<respLength;i++) {
-						var mydate = new Date(resp[i].date);
+						// var mydate = new Date(resp[i].date);
+						var mydate = Date.parse(resp[i].date);						
 						weekDay = mydate.getDay();
 
 						if (resp[i].slot !== "") {	
@@ -301,7 +303,10 @@
 	// return Date in following format: ddd M/D. Example: " Sun 6/30 "
 	// -------------------------------------------------- //
 	var getDateColumnTitle = function($dateObj) {
-		return $dateObj.toLocaleDateString("en-US", {weekday: "short"}) + " " + $dateObj.toLocaleDateString("en-US", {month: "numeric", day: "numeric"});
+		// return $dateObj.toLocaleDateString("en-US", {weekday: "short"}) + " " + $dateObj.toLocaleDateString("en-US", {month: "numeric", day: "numeric"});
+		var DateVar = Date.parse($dateObj.toLocaleDateString("en-US"));
+		var dateColumnTittle = DateVar.toString("ddd") + " " + DateVar.toString("M") + "/" + DateVar.toString("d") ;
+		return dateColumnTittle;
 	}
 
 	// -------------------------------------------------- //
@@ -324,16 +329,30 @@
 	// update Date, month and year displayed between the prev and next buttons and also the dates in each column of the calendar
 	// -------------------------------------------------- //
 	var updateDatesOnCalendar = function(firstDayOfWeek, datesArray) {  //firstDayOfWeek is a Date object
-
+/*
 		var firstDateOfWeek_day = firstDayOfWeek.toLocaleDateString("en-US", {day: "numeric"});
 		var firstDateOfWeek_month = firstDayOfWeek.toLocaleDateString("en-US", {month: "short"});
 		var firstDateOfWeek_year = firstDayOfWeek.toLocaleDateString("en-US", {year: "numeric"});
+*/
+		var firstDateOfWeek_day = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("d");
+		var firstDateOfWeek_month = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("MMM");
+		var firstDateOfWeek_year = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("yyyy");
+
+		console.log("firstDateOfWeek_day:" + firstDateOfWeek_day + ", firstDateOfWeek_month:" + firstDateOfWeek_month + ", firstDateOfWeek_year:" + firstDateOfWeek_year);
 
 		var lastDateOfWeek = firstDayOfWeek.clone();
 		lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+/*		
 		var lastDateOfWeek_day = lastDateOfWeek.toLocaleDateString("en-US", {day: "numeric"});
 		var lastDateOfWeek_month = lastDateOfWeek.toLocaleDateString("en-US", {month: "short"});
-		var lastDateOfWeek_year = lastDateOfWeek.toLocaleDateString("en-US", {year: "numeric"});		
+		var lastDateOfWeek_year = lastDateOfWeek.toLocaleDateString("en-US", {year: "numeric"});
+*/
+		var lastDateOfWeek_day = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("d");
+		var lastDateOfWeek_month = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("MMM");
+		var lastDateOfWeek_year = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("yyyy");
+
+
+		console.log("lastDateOfWeek_day:" + lastDateOfWeek_day + ", lastDateOfWeek_month:" + lastDateOfWeek_month + ", lastDateOfWeek_year:" + lastDateOfWeek_year);	
 
 		// update the date, month and year between prev and next buttons
 		var currentWeekString = "";
