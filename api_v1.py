@@ -170,26 +170,28 @@ class BookingHandler(ApiHandler):
         Slot.room == room))
 
     block_edges = self._find_block_edges(slots)
-    # Find the edges that are closest to our slot and get rid of everything
-    # else.
-    block_edges.append(slot)
-    block_edges.sort()
-    position = block_edges.index(slot)
-    if position == 0:
-      # This is a special case.
-      block_edges = [block_edges[1]]
-    else:
-      block_edges = block_edges[(position - 1):]
-      block_edges = block_edges[:3]
-      block_edges.remove(slot)
-    
-    for booked_slot in block_edges:
-      logging.info("Booked slot: %d." % (booked_slot))
-      if (abs(int(booked_slot) - slot) != 1 and \
-          abs(int(booked_slot) - slot) <= empty):
-        self.response.out.write(False)
-        logging.warning("User did not leave enough space between blocks.")
-        return
+    # Only worth doing this if there are other slots booked.
+    if len(block_edges) != 0:
+      # Find the edges that are closest to our slot and get rid of everything
+      # else.
+      block_edges.append(slot)
+      block_edges.sort()
+      position = block_edges.index(slot)
+      if position == 0:
+        # This is a special case.
+        block_edges = [block_edges[1]]
+      else:
+        block_edges = block_edges[(position - 1):]
+        block_edges = block_edges[:3]
+        block_edges.remove(slot)
+      
+      for booked_slot in block_edges:
+        logging.info("Booked slot: %d." % (booked_slot))
+        if (abs(int(booked_slot) - slot) != 1 and \
+            abs(int(booked_slot) - slot) <= empty):
+          self.response.out.write(False)
+          logging.warning("User did not leave enough space between blocks.")
+          return
 
     slot = Slot(owner = name, slot = slot, date = date, room = room)
     slot.put()
