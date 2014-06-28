@@ -57,9 +57,9 @@ class ApiHandler(webapp2.RequestHandler):
     if not user:
       self.response.set_status(401)
       return False
-    # if "@hackerdojo.com" not in user.email():
-    #  self.response.set_status(401)
-    #  return False
+    if "@hackerdojo.com" not in user.email():
+      self.response.set_status(401)
+      return False
     return True
   
   # Helper for getting parameters from reqests.
