@@ -143,6 +143,8 @@ class BookingHandler(ApiHandler):
   empty_time = 2
   # The number of days someone can book a slot in advance.
   advance_booking = 30
+  # The maximum amount of consecutive slots someone can book.
+  max_slots = 4
 
   def post(self):
     if not self._check_authentication():
@@ -178,7 +180,25 @@ class BookingHandler(ApiHandler):
         Slot.room == room))
 
     block_edges = self._find_block_edges(slots)
-    if
+
+    # Make sure we're not booking too large a block.
+    failed = False
+    for i in range(0, len(block_edges)):
+      edge = block_edges[i]
+      if i % 2 != 0:
+        # Rising edge.
+        if edge - slot == 1:
+          if block_edges[i + 1] - slot >= self.max_slots:
+            failed = True
+        else:
+          # Falling edge.
+          if slot - block_edges[i - 1] >= self.max_slots:
+            failed = True
+
+    if failed:
+      logging.warning("User cannot book this many slots.")
+      self.response.out.write(False)
+      return
 
     # Only worth doing this if there are other slots booked.
     if len(block_edges) != 0:
@@ -242,7 +262,7 @@ class RemoveHandler(ApiHandler):
       logging.warning("Error %d: Cannot delete slot in middle of block." \
           % (error))
     else:
-      found.key.delete()
+      to_delete.key.delete()
       logging.info("Deleted slot.")
 
     self.response.out.write(error)
