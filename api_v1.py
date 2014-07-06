@@ -178,6 +178,8 @@ class BookingHandler(ApiHandler):
         Slot.room == room))
 
     block_edges = self._find_block_edges(slots)
+    if
+
     # Only worth doing this if there are other slots booked.
     if len(block_edges) != 0:
       # Find the edges that are closest to our slot and get rid of everything
@@ -223,7 +225,7 @@ class RemoveHandler(ApiHandler):
 
     # Find the room we're looking for.
     to_delete = Slot.query(ndb.AND(Slot.date == date, Slot.slot == slot)).get()
-    if not info:
+    if not to_delete:
       error = -101
       logging.warning("Error %d: Slot not reserved." % (error))
       self.response.out.write(error)
