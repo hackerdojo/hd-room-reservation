@@ -231,6 +231,26 @@ class BookingHandler(ApiHandler):
 
 # Handler for removing a reservation on a slot.
 class RemoveHandler(ApiHandler):
+  
+  def post(self):
+    if not self._check_authentication():
+      return
+
+    params = self._get_parameters("slot", "date")
+    if not params:
+      return
+    slot = int(params[0])
+    date = make_date(params[1])
+    
+    prop = Slot.query(ndb.AND(Slot.date == date, Slot.slot == slot)).get()
+    if prop:
+      prop.key.delete()
+      self.response.out.write(True)
+      return
+
+    self.response.out.write(False)
+  
+  """
   def post(self):
     if not self._check_authentication():
       return
@@ -266,7 +286,7 @@ class RemoveHandler(ApiHandler):
       logging.info("Deleted slot.")
 
     self.response.out.write(error)
-
+  """    		
 app = webapp2.WSGIApplication([
     ("/login", LoginHandler),
     ("/logout", LogoutHandler),

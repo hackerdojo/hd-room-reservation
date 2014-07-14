@@ -71,12 +71,16 @@
 	// -------------------------------------------------- //
 	// Transform date object into string in the following format: YYYY-MM-DD
 	// -------------------------------------------------- //
+
 	var convertDateToString = function(dateObj) {
 		// var dateString = dateObj.toLocaleDateString("en-US", {year: "numeric"}) + "-" + dateObj.toLocaleDateString("en-US", {month: "numeric"}) + "-" + dateObj.toLocaleDateString("en-US", {day: "numeric"});
 		var dateString = Date.parse(dateObj.toLocaleDateString("en-US")).toString("yyyy-MM-dd");
+		//console.log(dateObj); // Debug statement to read date object -Karen
 		return dateString;
 	}
 
+	
+	
 	// -------------------------------------------------- //
 	// fill slot with corresponding user name (Ajax call)
 	// -------------------------------------------------- //
@@ -136,6 +140,7 @@
 
 		var dateParam =  "";
 		var slotParam = "";
+		var fullDateParam = ""; // Shows full date string -Karen
 		// set parameters to send in the Ajax call
 		var slotWeekDay = $slotObject.data("day");
 		slotParam = $slotObject.closest("tr").data("hour");
@@ -143,39 +148,52 @@
 		switch (slotWeekDay) {
 			case 0:
 				dateParam = convertDateToString(datesArray[0]);
+				fullDateParam = datesArray[0];
 				break;
 			case 1:
 				dateParam = convertDateToString(datesArray[1]);
+				fullDateParam = datesArray[1];
 				break;
 			case 2:
 				dateParam = convertDateToString(datesArray[2]);
+				fullDateParam = datesArray[2];
 				break;
 			case 3:
 				dateParam = convertDateToString(datesArray[3]);
+				fullDateParam = datesArray[3];
 				break;
 			case 4:
 				dateParam = convertDateToString(datesArray[4]);
+				fullDateParam = datesArray[4];
 				break;
 			case 5:
 				dateParam = convertDateToString(datesArray[5]);
+				fullDateParam = datesArray[5];
 				break;
 			case 6:
 				dateParam = convertDateToString(datesArray[6]);
+				fullDateParam = datesArray[6];
 				break;	
 			default:
 				dateParam = "";				
+				fullDateParam = "";
 				break;	
 		}
 
 		switch (action) {
 			case "add":
 				// make AJAX call to add slot
+				// Add "deny add" change here instead so ajax call does not go through. -Karen
 				$.ajax({
 					url: '/api/v1/add',
 					type: 'POST',
 					data: {slot: slotParam, date: dateParam, room: roomParam},
 					success: function(resp) {
-						if (resp === "True") {
+						var compareDate = Date.compare(Date.today(), fullDateParam);
+						console.log(Date.today()); //debug code  -Karen
+						console.log(fullDateParam); //debug code -Karen
+						console.log(compareDate); //debug code  -Karen
+						if ((resp === "True") && (compareDate === (0 || -1))) {
 							$slotObject.text(userName);
 							updateSlotStyle($slotObject, "display");
 							return true;
@@ -305,7 +323,9 @@
 	var getDateColumnTitle = function($dateObj) {
 		// return $dateObj.toLocaleDateString("en-US", {weekday: "short"}) + " " + $dateObj.toLocaleDateString("en-US", {month: "numeric", day: "numeric"});
 		var DateVar = Date.parse($dateObj.toLocaleDateString("en-US"));
-		var dateColumnTittle = DateVar.toString("ddd") + " " + DateVar.toString("M") + "/" + DateVar.toString("d") ;
+		//var dateColumnTittle = DateVar.toString("ddd") + " " + DateVar.toString("M") + "/" + DateVar.toString("d") ; Was printing code incorrectly -Karen
+		var dateColumnTittle = DateVar.toString("ddd") + " " + DateVar.toString("d"); //String corrected from above -Karen
+		console.log(dateColumnTittle); // debug code -Karen
 		return dateColumnTittle;
 	}
 
