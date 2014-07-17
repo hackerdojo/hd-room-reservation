@@ -126,6 +126,7 @@
 					
 				},
 				error: function(req, status, err) {
+					alert("Not able to populate slots. Error message: " + err); // Added by Giovanna 7/16
 
 				}
 			});
@@ -199,11 +200,12 @@
 							return true;
 						} else {
 							// display error message
-							alert("Sorry, cannot book this slot!! - Add ajax call");
+							alert("Sorry, cannot book this slot!");
 							return false;
 							}
 					},
 					error: function(req, status, err) {
+						alert("Not able to book slot. Error message: " + err); // Added by Giovanna 7/16
 						return false;
 					}
 				});
@@ -225,6 +227,7 @@
 							}
 					},
 					error: function(req, status, err) {
+						alert("Not able to delete slot. Error message: " + err);  // added by Giovanna 7/16
 						return false;
 					}
 				});
@@ -324,8 +327,9 @@
 		// return $dateObj.toLocaleDateString("en-US", {weekday: "short"}) + " " + $dateObj.toLocaleDateString("en-US", {month: "numeric", day: "numeric"});
 		var DateVar = Date.parse($dateObj.toLocaleDateString("en-US"));
 		//var dateColumnTittle = DateVar.toString("ddd") + " " + DateVar.toString("M") + "/" + DateVar.toString("d") ; Was printing code incorrectly -Karen
-		var dateColumnTittle = DateVar.toString("ddd") + " " + DateVar.toString("d"); //String corrected from above -Karen
-		console.log(dateColumnTittle); // debug code -Karen
+		// var dateColumnTittle = DateVar.toString("ddd") + " " + DateVar.toString(" d "); //String corrected from above -Karen
+		// Giovanna - fixed the issue. Date.js library "d" format was taken as standar format M/d/yyyy. Added space so it is taken as "custom"
+		var dateColumnTittle = DateVar.toString("ddd") + " " + DateVar.toString("M") + "/" + DateVar.toString("d ") ; 
 		return dateColumnTittle;
 	}
 
@@ -354,7 +358,8 @@
 		var firstDateOfWeek_month = firstDayOfWeek.toLocaleDateString("en-US", {month: "short"});
 		var firstDateOfWeek_year = firstDayOfWeek.toLocaleDateString("en-US", {year: "numeric"});
 */
-		var firstDateOfWeek_day = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("d");
+		//var firstDateOfWeek_day = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("d");  
+		var firstDateOfWeek_day = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("d ");  //Giovanna - added space in "d" format
 		var firstDateOfWeek_month = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("MMM");
 		var firstDateOfWeek_year = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("yyyy");
 
@@ -367,7 +372,8 @@
 		var lastDateOfWeek_month = lastDateOfWeek.toLocaleDateString("en-US", {month: "short"});
 		var lastDateOfWeek_year = lastDateOfWeek.toLocaleDateString("en-US", {year: "numeric"});
 */
-		var lastDateOfWeek_day = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("d");
+		// var lastDateOfWeek_day = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("d");
+		var lastDateOfWeek_day = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("d "); //Giovanna - added space in "d" format
 		var lastDateOfWeek_month = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("MMM");
 		var lastDateOfWeek_year = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("yyyy");
 
