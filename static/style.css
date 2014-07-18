@@ -7,26 +7,31 @@
     border-bottom: 0.5em solid #a3203f;
 } 
 
-.resourceName {
+#hd-logo, #hd-username {
+   text-align: center;
+   line-height: 8em;
+}
+
+.hd-resourcename {
     margin: 1em 0 1.5em 4em; 
     font-size: 120%;
 }
 
-.weekNavTable {
-    margin: auto;
-    margin-bottom: 2em;
+.hd-week-nav-container {
+    padding-bottom: 2em;
 }
 
-.weekNavTable td {
-    vertical-align: middle;
-    /*text-align: center;*/
-    padding: 0.5em; 
+.hd-week-nav {
+    display: inline-block;
 }
-.completeWeek {
+
+.hd-display-week {
     font-size: 120%;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
 }
 
-.schedule td {
+.hd-schedule td {
     font-size: 0.8em;
     vertical-align: center;
     text-align: center;

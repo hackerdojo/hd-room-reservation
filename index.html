@@ -15,22 +15,27 @@
 <body>
 	<div class="container">
 		<div class="header">
-			<img src="static/hacker-dojo.png" class="img-responsive hd-logo"/>
+			<div class="row">
+  				<div class="col-md-9" id="hd-logo">
+					<img src="static/hacker-dojo.png" class="img-responsive hd-logo"/>
+  				</div>
+  				<div class="col-md-3 hidden-xs hidden-sm" id="hd-username">
+  					username
+  				</div>
+			</div>
 		</div>		
-		<div class="resourceName"></div>
+		<div class="hd-resourcename"></div>
 		<div class="container">
-			<table class="weekNavTable">
-				<tbody>
-					<tr>
-						<td class="text-center"><a href="" class="prevButton btn btn-primary" role="button"> < </a></td>
-						<td class="text-center"><div class="completeWeek"></div></td>
-						<td class="text-center"><a href="" class="nextButton btn btn-primary" role="button"> > </a></td>
-					</tr>	
-				</tbody>	
-			</table>	
+			<div class="row hd-week-nav-container">
+				<div class="col-xs-6 col-md-4 col-xs-offset-3 col-md-offset-4 text-center">
+					<div class="text-center hd-week-nav"><a href="" class="prevButton btn btn-primary" role="button"> < </a></div>
+					<div class="hd-display-week text-center hd-week-nav"></div>
+					<div class="text-center hd-week-nav"><a href="" class="nextButton btn btn-primary" role="button"> > </a></div>
+				</div>	
+			</div>	
 		</div>
 		
-		<table class="schedule table table-bordered table-responsive">
+		<table class="hd-schedule table table-bordered table-responsive">
 			<thead>
 				<tr>
 					<th></th>
@@ -95,7 +100,7 @@
 		var slotDate;
 
 		// Clear all content from calendar
-		$("table.schedule td").text("").each( function() {
+		$("table.hd-schedule td").text("").each( function() {
 			updateSlotStyle($(this), "display");
 		});
 
@@ -126,7 +131,7 @@
 					
 				},
 				error: function(req, status, err) {
-					alert("Not able to populate slots. Error message: " + err); // Added by Giovanna 7/16
+					//alert("Not able to populate slots. Error message: " + err); // Added by Giovanna 7/16
 
 				}
 			});
@@ -185,32 +190,40 @@
 			case "add":
 				// make AJAX call to add slot
 				// Add "deny add" change here instead so ajax call does not go through. -Karen
-				$.ajax({
-					url: '/api/v1/add',
-					type: 'POST',
-					data: {slot: slotParam, date: dateParam, room: roomParam},
-					success: function(resp) {
-						var compareDate = Date.compare(Date.today(), fullDateParam);
-						console.log(Date.today()); //debug code  -Karen
-						console.log(fullDateParam); //debug code -Karen
-						console.log(compareDate); //debug code  -Karen
-						if ((resp === "True") && (compareDate === (0 || -1))) {
-							$slotObject.text(userName);
-							updateSlotStyle($slotObject, "display");
-							return true;
-						} else {
-							// display error message
-							alert("Sorry, cannot book this slot!");
-							return false;
+
+				var compareDate = Date.compare(Date.today(), fullDateParam);
+				console.log(Date.today()); //debug code  -Karen
+				console.log(fullDateParam); //debug code -Karen
+				console.log(compareDate); //debug code  -Karen
+				if (compareDate === (0 || -1)) {
+						$.ajax({
+						url: '/api/v1/add',
+						type: 'POST',
+						data: {slot: slotParam, date: dateParam, room: roomParam},
+						success: function(resp) {
+							if (resp === "True") {
+								$slotObject.text(userName);
+								updateSlotStyle($slotObject, "display");
+								return true;
+							} else {
+								// display error message
+								alert("Sorry, cannot book this slot!");
+								return false;
 							}
-					},
-					error: function(req, status, err) {
-						alert("Not able to book slot. Error message: " + err); // Added by Giovanna 7/16
-						return false;
-					}
-				});
+						},
+						error: function(req, status, err) {
+							alert("Not able to book slot. Error message: " + err); // Added by Giovanna 7/16
+							return false;
+						}
+
+						});
+				} else {
+					// display error message
+					alert("This date occurs in the past.");
+					return false;
+				}
 				break;
-				
+
 			case "delete":
 				// make AJAX call to delete slot
 				var compareDate = Date.compare(Date.today(), fullDateParam);
@@ -233,19 +246,22 @@
 								}
 						},
 						error: function(req, status, err) {
+							alert("Not able to book slot. Error message: " + err); // Added by Giovanna 7/16
 							return false;
-							}
-					},
-					error: function(req, status, err) {
-						alert("Not able to delete slot. Error message: " + err);  // added by Giovanna 7/16
-						return false;
-					}
-				});
+						}
+					});
+				} else {
+					// display error message
+					alert("This date occurs in the past.");
+					return false;
+				}
 				break;	
 		}
 		return false;
 	}
 
+
+//						alert("Not able to book slot. Error message: " + err); // Added by Giovanna 7/16
 
 	// -------------------------------------------------- //
 	// update slot background
@@ -338,7 +354,7 @@
 		var DateVar = Date.parse($dateObj.toLocaleDateString("en-US"));
 		//var dateColumnTittle = DateVar.toString("ddd") + " " + DateVar.toString("M") + "/" + DateVar.toString("d") ; Was printing code incorrectly -Karen
 		// var dateColumnTittle = DateVar.toString("ddd") + " " + DateVar.toString(" d "); //String corrected from above -Karen
-		// Giovanna - fixed the issue. Date.js library "d" format was taken as standar format M/d/yyyy. Added space so it is taken as "custom"
+		// Giovanna - fixed the issue. Date.js library "d" format was taken as standard format M/d/yyyy. Added space so it is taken as "custom" format
 		var dateColumnTittle = DateVar.toString("ddd") + " " + DateVar.toString("M") + "/" + DateVar.toString("d ") ; 
 		return dateColumnTittle;
 	}
@@ -346,7 +362,9 @@
 	// -------------------------------------------------- //
 	// calculate each date of the week
 	// -------------------------------------------------- //
-	var getWeekDaysArray = function(firstDayOfWeek) {
+	var getWeekDaysArray = function(firstDayOfWeek, dateObj, displayOption) {
+	// var getWeekDaysArray = function(firstDayOfWeek) {
+
 		 var datesArray = [];
 		 var newDate = firstDayOfWeek.clone();
 
@@ -399,7 +417,7 @@
 		} else {
 			currentWeekString = firstDateOfWeek_month + " " + firstDateOfWeek_day + ", " +  firstDateOfWeek_year + " - " + lastDateOfWeek_month + " " + lastDateOfWeek_day + ", " + lastDateOfWeek_year;						
 		}
-		$(".completeWeek").text(currentWeekString);
+		$(".hd-display-week").text(currentWeekString);
 
 		// update days inside calendar column headers
 		var idValue = "";
@@ -430,6 +448,7 @@
 			$("#" + idValue).text(getDateColumnTitle(datesArray[i]));
 		}
 
+
 	}
 
 	// -------------------------------------------------- //
@@ -447,16 +466,27 @@
 
 	// Grab username
 	var userName = "{{ username }}";
+	console.log(userName);
+
+	// Display username on upper right corner
+	$("#hd-username").text(userName);	
+
+	// extract the username portion before @hackerdojo.com
 	userName = userName.split("@")[0];
 
 	// Set room name
 	var room = "Room XYZ";
-	$(".resourceName").text(room);
+	$(".hd-resourcename").text(room);
 
 	// Initial Display
 	var today = new Date();
 	var firstDayOfWeek = getFirstDayOfWeek(today);
-	var datesArray = getWeekDaysArray(firstDayOfWeek);	
+
+	// Identify device
+	var displayOption = "week";
+	// .................
+	var datesArray = getWeekDaysArray(firstDayOfWeek, today, displayOption);
+	// var datesArray = getWeekDaysArray(firstDayOfWeek);		
 	updateCalendar(firstDayOfWeek, datesArray, room);
 
 	// Initially disable prev button
@@ -495,12 +525,11 @@
 
 		if (todayPlus30days < lastDateOfWeek) {
 			$(".nextButton").addClass("disabled"); // disable next button when the current week is beyond today + 30 days			
-		}
-				
+		}				
 	});
 
 	// Slot "hover" and "click" actions	
-	$(".schedule td").hover(function(){     // ---- Slot "hover" logic
+	$(".hd-schedule td").hover(function(){     // ---- Slot "hover" logic
 			// mouse over
 			updateSlotStyle($(this), "mouse-over");
 		},
@@ -522,7 +551,6 @@
 				alert("Cannot delete slots from different owner");
 			}			
 		}
-
 	});
 
 </script>
