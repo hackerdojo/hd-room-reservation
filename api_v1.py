@@ -109,6 +109,11 @@ class ApiHandler(webapp2.RequestHandler):
         else:
           block_edges[-1] = prop.slot
 
+    # Block edges should have an even length. If it doesn't, it's because the
+    # last block was a singleton and didn't get duplicated.
+    if len(block_edges) % 2 != 0:
+      block_edges.append(block_edges[-1])
+
     logging.info("Block edges: %s" % (str(block_edges)))
     return block_edges
 
@@ -200,18 +205,17 @@ class BookingHandler(ApiHandler):
     failed = False
     for i in range(0, len(block_edges)):
       edge = block_edges[i]
-      if i % 2 != 0:
-        # Rising edge.
-        if edge - slot == 1:
-          if block_edges[i + 1] - slot >= self.max_slots:
-            failed = True
-        else:
-          # Falling edge.
-          if slot - block_edges[i - 1] >= self.max_slots:
-            failed = True
+      if (edge - slot == 1 and i % 2 == 0):
+        # Adding to beginning.
+        if block_edges[i + 1] - slot >= self.max_slots:
+          failed = True
+      elif (slot - edge == 1 and i % 2 == 1):
+        # Adding to end.
+        if slot - block_edges[i - 1] >= self.max_slots:
+          failed = True
 
     if failed:
-      self._exit_handler("User cannot book this many slots.")
+      self._exit_handler("User cannot book this many consecutive slots.")
       return
 
     # Only worth doing this if there are other slots booked.
