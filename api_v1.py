@@ -54,6 +54,7 @@ class ApiHandler(webapp2.RequestHandler):
   # Checks that there is a properly authenticated user.
   def _check_authentication(self):
     user = users.get_current_user()
+    logging.info("User: " + str(user))
     if not user:
       self.response.set_status(401)
       return False
@@ -111,6 +112,19 @@ class ApiHandler(webapp2.RequestHandler):
     logging.info("Block edges: %s" % (str(block_edges)))
     return block_edges
 
+  # Allows a request write its status.
+  def _exit_handler(self, error = None):
+    response = {}
+    if error:
+      response["status"] = False
+      response["message"] = error
+
+      logging.warning(error)
+    else:
+      response["status"] = True
+
+    self.response.out.write(json.dumps(response))
+
 # Handler for schedule requests.
 class ScheduleHandler(ApiHandler):
   def get(self):
@@ -146,6 +160,9 @@ class BookingHandler(ApiHandler):
   # The maximum amount of consecutive slots someone can book.
   max_slots = 4
 
+  def get(self):
+    self.post()
+
   def post(self):
     if not self._check_authentication():
       return
@@ -161,15 +178,13 @@ class BookingHandler(ApiHandler):
     advance = date - datetime.datetime.now().date()
     advance = advance.days
     if advance > self.advance_booking:
-      self.response.out.write(False)
-      logging.warning("User booked too far in advance.")
+      self._exit_handler("User booked too far in advance.")
       return
 
     # Make sure we're not double-booking.
     if Slot.query(ndb.AND(Slot.date == date, Slot.room == room,
         Slot.slot == slot)).get():
-      self.response.out.write(False)
-      logging.warning("User double-booked slot %d." % (slot))
+      self._exit_handler("User double-booked slot %d." % (slot))
       return
 
     name = self._get_name()
@@ -196,8 +211,7 @@ class BookingHandler(ApiHandler):
             failed = True
 
     if failed:
-      logging.warning("User cannot book this many slots.")
-      self.response.out.write(False)
+      self._exit_handler("User cannot book this many slots.")
       return
 
     # Only worth doing this if there are other slots booked.
@@ -219,38 +233,20 @@ class BookingHandler(ApiHandler):
         logging.info("Booked slot: %d." % (booked_slot))
         if (abs(int(booked_slot) - slot) != 1 and \
             abs(int(booked_slot) - slot) <= empty):
-          self.response.out.write(False)
-          logging.warning("User did not leave enough space between blocks.")
+          self._exit_handler("User did not leave enough space between blocks.")
           return
 
     slot = Slot(owner = name, slot = slot, date = date, room = room)
     slot.put()
     logging.info("Saved slot.")
 
-    self.response.out.write(True)
+    self._exit_handler()
 
 # Handler for removing a reservation on a slot.
 class RemoveHandler(ApiHandler):
-  
-  def post(self):
-    if not self._check_authentication():
-      return
+  def get(self):
+    self.post()
 
-    params = self._get_parameters("slot", "date")
-    if not params:
-      return
-    slot = int(params[0])
-    date = make_date(params[1])
-    
-    prop = Slot.query(ndb.AND(Slot.date == date, Slot.slot == slot)).get()
-    if prop:
-      prop.key.delete()
-      self.response.out.write(True)
-      return
-
-    self.response.out.write(False)
-  
-  """
   def post(self):
     if not self._check_authentication():
       return
@@ -266,9 +262,7 @@ class RemoveHandler(ApiHandler):
     # Find the room we're looking for.
     to_delete = Slot.query(ndb.AND(Slot.date == date, Slot.slot == slot)).get()
     if not to_delete:
-      error = -101
-      logging.warning("Error %d: Slot not reserved." % (error))
-      self.response.out.write(error)
+      self._exit_handler("Slot not reserved.")
       return
     room = to_delete.room
 
@@ -276,17 +270,16 @@ class RemoveHandler(ApiHandler):
         Slot.room == room))
     block_edges = self._find_block_edges(props)
     
-    error = 0
     if to_delete.slot not in block_edges:
-      error = -102
-      logging.warning("Error %d: Cannot delete slot in middle of block." \
-          % (error))
-    else:
-      to_delete.key.delete()
-      logging.info("Deleted slot.")
+      self._exit_handler("Cannot delete slot in middle of block.")
+      return
+      
+    to_delete.key.delete()
+    logging.info("Deleted slot.")
 
-    self.response.out.write(error)
-  """    		
+    self._exit_handler()
+    return
+
 app = webapp2.WSGIApplication([
     ("/login", LoginHandler),
     ("/logout", LogoutHandler),
