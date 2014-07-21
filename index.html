@@ -76,14 +76,12 @@
 	// -------------------------------------------------- //
 	// Transform date object into string in the following format: YYYY-MM-DD
 	// -------------------------------------------------- //
-
 	var convertDateToString = function(dateObj) {
 		// var dateString = dateObj.toLocaleDateString("en-US", {year: "numeric"}) + "-" + dateObj.toLocaleDateString("en-US", {month: "numeric"}) + "-" + dateObj.toLocaleDateString("en-US", {day: "numeric"});
 		var dateString = Date.parse(dateObj.toLocaleDateString("en-US")).toString("yyyy-MM-dd");
 		//console.log(dateObj); // Debug statement to read date object -Karen
 		return dateString;
 	}
-
 	
 	
 	// -------------------------------------------------- //
@@ -261,7 +259,6 @@
 	}
 
 
-//						alert("Not able to book slot. Error message: " + err); // Added by Giovanna 7/16
 
 	// -------------------------------------------------- //
 	// update slot background
