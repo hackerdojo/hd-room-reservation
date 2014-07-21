@@ -199,13 +199,14 @@
 						type: 'POST',
 						data: {slot: slotParam, date: dateParam, room: roomParam},
 						success: function(resp) {
-							if (resp === "True") {
+						  var data =  JSON.parse(resp);
+							if (data.status) {
 								$slotObject.text(userName);
 								updateSlotStyle($slotObject, "display");
 								return true;
 							} else {
 								// display error message
-								alert("Sorry, cannot book this slot!");
+								alert(data.message);
 								return false;
 							}
 						},
@@ -234,12 +235,13 @@
 						type: 'POST',
 						data: {slot: slotParam, date: dateParam},
 						success: function(resp) {
-							if (resp === "True") {
+						  var data = JSON.parse(resp);
+							if (data.status) {
 								$slotObject.text("");
 								updateSlotStyle($(this), "display");
 								return true;
 							} else {
-								alert("Error deleting slot");
+								alert(data.message);
 								return false;
 								}
 						},
