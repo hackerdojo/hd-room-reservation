@@ -27,7 +27,7 @@
 		<div class="hd-resourcename"></div>
 		<div class="container">
 			<div class="row hd-week-nav-container">
-				<div class="col-xs-6 col-md-4 col-xs-offset-3 col-md-offset-4 text-center">
+				<div class="col-xs-10 col-md-4 col-xs-offset-1 col-md-offset-4 text-center">
 					<div class="text-center hd-week-nav"><a href="" class="prevButton btn btn-primary" role="button"> < </a></div>
 					<div class="hd-display-week text-center hd-week-nav"></div>
 					<div class="text-center hd-week-nav"><a href="" class="nextButton btn btn-primary" role="button"> > </a></div>
@@ -444,7 +444,7 @@
 			var month = Date.parse(currentDate.toLocaleDateString("en-US")).toString("MMM");
 			var year = Date.parse(currentDate.toLocaleDateString("en-US")).toString("yyyy");
 
-			currentWeekString = month + day + ", " + year;
+			currentWeekString = month + " " + day + ", " + year;
 			$(".hd-display-week").text(currentWeekString);
 
 			break;
