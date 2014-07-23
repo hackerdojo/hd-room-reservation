@@ -572,6 +572,20 @@
 
 	});
 
+  // -------------------------------------------------- //
+  // Light Box
+  // -------------------------------------------------- //
+  function errorMessage(message){
+    $('<div class="lightbox">' +
+        '<div class="lightboxOverlay"></div>' +
+        '<div class="lightboxDialog">' +
+          '<p></p>' +
+          '<button onclick="$(this).parents(\'.lightbox\').remove();return false;">Close</button>' +
+        '</div>' +
+      '</div>'
+    ).appendTo('body');
+    $(".lightbox p").text(message);
+  }
 </script>
 
 </html>    
