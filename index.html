@@ -39,13 +39,13 @@
 			<thead>
 				<tr>
 					<th></th>
-					<th id="sun" class="text-center">Sun</th>
-					<th id="mon" class="text-center">Mon</th>
-					<th id="tue" class="text-center">Tue</th>
-					<th id="wed" class="text-center">Wed</th>
-					<th id="thu" class="text-center">Thu</th>
-					<th id="fri" class="text-center">Fri</th>
-					<th id="sat" class="text-center">Sat</th>
+					<th id="sun" data-day="0" class="text-center">Sun</th>
+					<th id="mon" data-day="1" class="text-center">Mon</th>
+					<th id="tue" data-day="2" class="text-center">Tue</th>
+					<th id="wed" data-day="3" class="text-center">Wed</th>
+					<th id="thu" data-day="4" class="text-center">Thu</th>
+					<th id="fri" data-day="5" class="text-center">Fri</th>
+					<th id="sat" data-day="6" class="text-center">Sat</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -103,6 +103,8 @@
 		});
 
 		for (i=0;i<datesArrayLength;i++) {
+			if (typeof (datesArray[i]) === "undefined") 
+			continue;	
 			dateParam = convertDateToString(datesArray[i]);
 
 			$.ajax({
@@ -238,7 +240,7 @@
 						  var data = JSON.parse(resp);
 							if (data.status) {
 								$slotObject.text("");
-								updateSlotStyle($(this), "display");
+								updateSlotStyle($slotObject, "display");
 								return true;
 							} else {
 								alert(data.message);
@@ -246,7 +248,7 @@
 								}
 						},
 						error: function(req, status, err) {
-							alert("Not able to book slot. Error message: " + err); // Added by Giovanna 7/16
+							alert("Not able to delete slot. Error message: " + err); // Added by Giovanna 7/16
 							return false;
 						}
 					});
@@ -269,42 +271,13 @@
 	var updateSlotStyle = function($slotObject, action) {
 		switch (action) {
 			case "mouse-over":
-				if ($slotObject.text() === "" ) { 
-					$slotObject.removeClass("displayEmptySlot");	
-					$slotObject.removeClass("displayBookedSlot");	
-					$slotObject.removeClass("mouseOverBookedSlotOwner");	
-					$slotObject.removeClass("mouseOverBookedSlotNoOwner");	
-					$slotObject.addClass("mouseOverEmptySlot");	
-				} else {
-					if (userName === $slotObject.text()) {
-						$slotObject.removeClass("displayEmptySlot");	
-						$slotObject.removeClass("displayBookedSlot");	
-						$slotObject.removeClass("mouseOverEmptySlot");	
-						$slotObject.removeClass("mouseOverBookedSlotNoOwner");	
-						$slotObject.addClass("mouseOverBookedSlotOwner");				
-					} else {
-						$slotObject.removeClass("displayEmptySlot");	
-						$slotObject.removeClass("displayBookedSlot");	
-						$slotObject.removeClass("mouseOverEmptySlot");	
-						$slotObject.removeClass("mouseOverBookedSlotOwner");	
-						$slotObject.addClass("mouseOverBookedSlotNoOwner");				
-					}
-
-				} 
-				break;
 			case "mouse-out":
 			case "display":
 				if ($slotObject.text() === "" ) { 
-					$slotObject.removeClass("displayBookedSlot");	
-					$slotObject.removeClass("mouseOverEmptySlot");	
-					$slotObject.removeClass("mouseOverBookedSlotOwner");	
-					$slotObject.removeClass("mouseOverBookedSlotNoOwner");	
+					$slotObject.removeClass("displayBookedSlot");		
 					$slotObject.addClass("displayEmptySlot");	
 				} else {
 					$slotObject.removeClass("displayEmptySlot");	
-					$slotObject.removeClass("mouseOverEmptySlot");	
-					$slotObject.removeClass("mouseOverBookedSlotOwner");	
-					$slotObject.removeClass("mouseOverBookedSlotNoOwner");	
 					$slotObject.addClass("displayBookedSlot");	
 				}
 				break;
@@ -353,7 +326,7 @@
 		var DateVar = Date.parse($dateObj.toLocaleDateString("en-US"));
 		//var dateColumnTittle = DateVar.toString("ddd") + " " + DateVar.toString("M") + "/" + DateVar.toString("d") ; Was printing code incorrectly -Karen
 		// var dateColumnTittle = DateVar.toString("ddd") + " " + DateVar.toString(" d "); //String corrected from above -Karen
-		// Giovanna - fixed the issue. Date.js library "d" format was taken as standard format M/d/yyyy. Added space so it is taken as "custom" format
+		// Giovanna - fixed the issue. Date.js library "d" format was taken as standard format M/d/yyyy. Added space so it is now taken as "custom" format
 		var dateColumnTittle = DateVar.toString("ddd") + " " + DateVar.toString("M") + "/" + DateVar.toString("d ") ; 
 		return dateColumnTittle;
 	}
@@ -362,16 +335,23 @@
 	// calculate each date of the week
 	// -------------------------------------------------- //
 	var getWeekDaysArray = function(firstDayOfWeek, dateObj, displayOption) {
-	// var getWeekDaysArray = function(firstDayOfWeek) {
 
 		 var datesArray = [];
-		 var newDate = firstDayOfWeek.clone();
 
-		 // populate each day of the week in datesArray
-		 for (i=0;i<=6;i++) {
-			datesArray[i] = newDate.clone();
-			newDate.setDate(newDate.getDate() + 1);
-		 }
+		 switch (displayOption) {
+		 case "week":
+		 	var newDate = firstDayOfWeek.clone();
+
+		 	// populate each day of the week in datesArray
+		 	for (i=0;i<=6;i++) {
+				datesArray[i] = newDate.clone();
+				newDate.setDate(newDate.getDate() + 1);
+		 	}
+		 	break;		 	
+		 
+		 case "day":
+		 	datesArray[dateObj.getDay()] = dateObj;
+		}
 
 		 return datesArray;
 	}
@@ -379,49 +359,18 @@
 	// -------------------------------------------------- //
 	// update Date, month and year displayed between the prev and next buttons and also the dates in each column of the calendar
 	// -------------------------------------------------- //
-	var updateDatesOnCalendar = function(firstDayOfWeek, datesArray) {  //firstDayOfWeek is a Date object
-/*
-		var firstDateOfWeek_day = firstDayOfWeek.toLocaleDateString("en-US", {day: "numeric"});
-		var firstDateOfWeek_month = firstDayOfWeek.toLocaleDateString("en-US", {month: "short"});
-		var firstDateOfWeek_year = firstDayOfWeek.toLocaleDateString("en-US", {year: "numeric"});
-*/
-		//var firstDateOfWeek_day = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("d");  
-		var firstDateOfWeek_day = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("d ");  //Giovanna - added space in "d" format
-		var firstDateOfWeek_month = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("MMM");
-		var firstDateOfWeek_year = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("yyyy");
-
-		console.log("firstDateOfWeek_day:" + firstDateOfWeek_day + ", firstDateOfWeek_month:" + firstDateOfWeek_month + ", firstDateOfWeek_year:" + firstDateOfWeek_year);
-
-		var lastDateOfWeek = firstDayOfWeek.clone();
-		lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
-/*		
-		var lastDateOfWeek_day = lastDateOfWeek.toLocaleDateString("en-US", {day: "numeric"});
-		var lastDateOfWeek_month = lastDateOfWeek.toLocaleDateString("en-US", {month: "short"});
-		var lastDateOfWeek_year = lastDateOfWeek.toLocaleDateString("en-US", {year: "numeric"});
-*/
-		// var lastDateOfWeek_day = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("d");
-		var lastDateOfWeek_day = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("d "); //Giovanna - added space in "d" format
-		var lastDateOfWeek_month = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("MMM");
-		var lastDateOfWeek_year = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("yyyy");
-
-
-		console.log("lastDateOfWeek_day:" + lastDateOfWeek_day + ", lastDateOfWeek_month:" + lastDateOfWeek_month + ", lastDateOfWeek_year:" + lastDateOfWeek_year);	
-
-		// update the date, month and year between prev and next buttons
-		var currentWeekString = "";
-		if (firstDateOfWeek_month === lastDateOfWeek_month) {
-			currentWeekString = firstDateOfWeek_month + " " + firstDateOfWeek_day + " - " + lastDateOfWeek_day + ", " + firstDateOfWeek_year;			
-		} else if (firstDateOfWeek_year === lastDateOfWeek_year) {
-			currentWeekString = firstDateOfWeek_month + " " + firstDateOfWeek_day + " - " + lastDateOfWeek_month + " " + lastDateOfWeek_day + ", " + firstDateOfWeek_year;			
-		} else {
-			currentWeekString = firstDateOfWeek_month + " " + firstDateOfWeek_day + ", " +  firstDateOfWeek_year + " - " + lastDateOfWeek_month + " " + lastDateOfWeek_day + ", " + lastDateOfWeek_year;						
-		}
-		$(".hd-display-week").text(currentWeekString);
+	var updateDatesOnCalendar = function(firstDayOfWeek, currentDate, datesArray, displayOption) {  //firstDayOfWeek is a Date object
 
 		// update days inside calendar column headers
 		var idValue = "";
-		for (i=0;i<=6;i++) {
-			switch (i) {
+		
+		var arrayLength = datesArray.length;
+		var weekday;
+		for (i=0;i<=arrayLength - 1;i++) {
+			if (typeof (datesArray[i]) === "undefined") 
+			continue;	
+			weekday = datesArray[i].getDay();
+			switch (weekday) {
 				case 0:
 					idValue = "sun";
 					break;
@@ -444,7 +393,62 @@
 					idValue = "sat";
 					break;
 			}
-			$("#" + idValue).text(getDateColumnTitle(datesArray[i]));
+			$("#" + idValue).text(getDateColumnTitle(datesArray[i]));				
+		}
+
+		// Display Week or Day on the week/day navigation section
+		var currentWeekString = "";
+
+		switch (displayOption) {
+
+		case "week":	
+/*
+			var firstDateOfWeek_day = firstDayOfWeek.toLocaleDateString("en-US", {day: "numeric"});
+			var firstDateOfWeek_month = firstDayOfWeek.toLocaleDateString("en-US", {month: "short"});
+			var firstDateOfWeek_year = firstDayOfWeek.toLocaleDateString("en-US", {year: "numeric"});
+*/
+			// var firstDateOfWeek_day = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("d");  
+			var firstDateOfWeek_day = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("d ");  //Giovanna - added space in "d" format
+			var firstDateOfWeek_month = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("MMM");
+			var firstDateOfWeek_year = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("yyyy");
+
+			console.log("firstDateOfWeek_day:" + firstDateOfWeek_day + ", firstDateOfWeek_month:" + firstDateOfWeek_month + ", firstDateOfWeek_year:" + firstDateOfWeek_year);
+
+			var lastDateOfWeek = firstDayOfWeek.clone();
+			lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+/*		
+			var lastDateOfWeek_day = lastDateOfWeek.toLocaleDateString("en-US", {day: "numeric"});
+			var lastDateOfWeek_month = lastDateOfWeek.toLocaleDateString("en-US", {month: "short"});
+			var lastDateOfWeek_year = lastDateOfWeek.toLocaleDateString("en-US", {year: "numeric"});
+*/
+			// var lastDateOfWeek_day = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("d");
+			var lastDateOfWeek_day = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("d "); //Giovanna - added space in "d" format
+			var lastDateOfWeek_month = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("MMM");
+			var lastDateOfWeek_year = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("yyyy");
+
+			console.log("lastDateOfWeek_day:" + lastDateOfWeek_day + ", lastDateOfWeek_month:" + lastDateOfWeek_month + ", lastDateOfWeek_year:" + lastDateOfWeek_year);	
+
+			// update the date, month and year between prev and next buttons
+			if (firstDateOfWeek_month === lastDateOfWeek_month) {
+				currentWeekString = firstDateOfWeek_month + " " + firstDateOfWeek_day + " - " + lastDateOfWeek_day + ", " + firstDateOfWeek_year;			
+			} else if (firstDateOfWeek_year === lastDateOfWeek_year) {
+				currentWeekString = firstDateOfWeek_month + " " + firstDateOfWeek_day + " - " + lastDateOfWeek_month + " " + lastDateOfWeek_day + ", " + firstDateOfWeek_year;			
+			} else {
+				currentWeekString = firstDateOfWeek_month + " " + firstDateOfWeek_day + ", " +  firstDateOfWeek_year + " - " + lastDateOfWeek_month + " " + lastDateOfWeek_day + ", " + lastDateOfWeek_year;						
+			}
+			$(".hd-display-week").text(currentWeekString);
+			break;
+
+		case "day":
+			var day = Date.parse(currentDate.toLocaleDateString("en-US")).toString("d ");  //Giovanna - added space in "d" format
+			var month = Date.parse(currentDate.toLocaleDateString("en-US")).toString("MMM");
+			var year = Date.parse(currentDate.toLocaleDateString("en-US")).toString("yyyy");
+
+			currentWeekString = month + day + ", " + year;
+			$(".hd-display-week").text(currentWeekString);
+
+			break;
+
 		}
 
 
@@ -453,9 +457,21 @@
 	// -------------------------------------------------- //
 	// Update both, dates and content
 	// -------------------------------------------------- //
-	var updateCalendar = function(firstDayOfWeek, datesArray, room) {
-		updateDatesOnCalendar(firstDayOfWeek, datesArray);	
+	var updateCalendar = function(firstDayOfWeek, currentDate, datesArray, room, displayOption) {
+		updateDatesOnCalendar(firstDayOfWeek, currentDate, datesArray, displayOption);	
 		fillOutSlotFromDB(datesArray, room);
+
+		// For small devices, we only display current Date
+		switch (displayOption) {
+			case "week":
+				//do nothing, no need to hide any column
+				break;
+			case "day":
+				var weekDay = currentDate.getDay();
+				$("thead th[data-day][data-day!='" + weekDay + "']").hide();
+				$("td[data-day!='" + weekDay + "']").hide();
+				break;	
+		}
 	}
 
 
@@ -481,12 +497,23 @@
 	var today = new Date();
 	var firstDayOfWeek = getFirstDayOfWeek(today);
 
-	// Identify device
-	var displayOption = "week";
-	// .................
-	var datesArray = getWeekDaysArray(firstDayOfWeek, today, displayOption);
-	// var datesArray = getWeekDaysArray(firstDayOfWeek);		
-	updateCalendar(firstDayOfWeek, datesArray, room);
+	// Identify screen size  -- Giovanna - July 21st
+	var height = $(window).height();
+	var width = $(window).width();
+	console.log("height: " + height + ", width: " + width);
+
+	var displayOption;
+	if (width < 768) {
+		displayOption = "day";
+	} else {
+		displayOption = "week";		
+	}
+
+	// Calculate currentDate used for displaying only current Date for small devices
+	var currentDate = today;
+
+	var datesArray = getWeekDaysArray(firstDayOfWeek, currentDate, displayOption);
+	updateCalendar(firstDayOfWeek, currentDate, datesArray, room, displayOption);
 
 	// Initially disable prev button
 	$(".prevButton").addClass("disabled");
@@ -496,8 +523,8 @@
 		e.preventDefault();
 		if (today < firstDayOfWeek) {
 			firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 7);
-			datesArray = getWeekDaysArray(firstDayOfWeek);
-			updateCalendar(firstDayOfWeek, datesArray, room);
+			datesArray = getWeekDaysArray(firstDayOfWeek, currentDate, displayOption);
+			updateCalendar(firstDayOfWeek, currentDate, datesArray, room, displayOption);
 			$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
 			if (today > firstDayOfWeek) {
 				$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
@@ -510,8 +537,8 @@
 		e.preventDefault();		
 		// set firstDayOfWeek to 1 week ahead and update dates on calendar
 		firstDayOfWeek.setDate(firstDayOfWeek.getDate() + 7);
-		datesArray = getWeekDaysArray(firstDayOfWeek);
-		updateCalendar(firstDayOfWeek, datesArray, room);
+		datesArray = getWeekDaysArray(firstDayOfWeek, currentDate, displayOption);
+		updateCalendar(firstDayOfWeek, currentDate, datesArray, room, displayOption);
 		
 		$(".prevButton").removeClass("disabled");  // enable prev button in case it was disabled
 
@@ -527,16 +554,8 @@
 		}				
 	});
 
-	// Slot "hover" and "click" actions	
-	$(".hd-schedule td").hover(function(){     // ---- Slot "hover" logic
-			// mouse over
-			updateSlotStyle($(this), "mouse-over");
-		},
-		function(){  
-			//mouse out
-			updateSlotStyle($(this), "mouse-out");
-		}
-	).click(function(){                     // ---- Slot "click" logic 
+	// Slot "click" action
+	$(".hd-schedule td").click(function(){                     
 		var response;
 		if ($(this).text() === "") {
 			// book/add slot
@@ -550,6 +569,7 @@
 				alert("Cannot delete slots from different owner");
 			}			
 		}
+
 	});
 
 </script>

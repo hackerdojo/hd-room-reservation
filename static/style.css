@@ -47,7 +47,7 @@
     padding: 0px  !important;
 }
 .mouseOverEmptySlot {
-    background-color: #E0CAAE; /* light tan */
+    background-color: #FFFFFF; /* light tan */
     cursor: pointer;
 }
 .mouseOverBookedSlotOwner {
