@@ -192,9 +192,9 @@
 				// Add "deny add" change here instead so ajax call does not go through. -Karen
 
 				var compareDate = Date.compare(Date.today(), fullDateParam);
-				console.log(Date.today()); //debug code  -Karen
-				console.log(fullDateParam); //debug code -Karen
-				console.log(compareDate); //debug code  -Karen
+				//console.log(Date.today()); //debug code  -Karen
+				//console.log(fullDateParam); //debug code -Karen
+				//console.log(compareDate); //debug code  -Karen
 				if (compareDate === (0 || -1)) {
 						$.ajax({
 						url: '/api/v1/add',
@@ -208,19 +208,22 @@
 								return true;
 							} else {
 								// display error message
-								alert(data.message);
+								// alert(data.message);
+								errorMessage(data.message);
 								return false;
 							}
 						},
 						error: function(req, status, err) {
-							alert("Not able to book slot. Error message: " + err); // Added by Giovanna 7/16
+							// alert("Not able to book slot. Error message: " + err); // Added by Giovanna 7/16
+							errorMessage("Not able to book slot. Error message: " + err);
 							return false;
 						}
 
 						});
 				} else {
 					// display error message
-					alert("This date occurs in the past.");
+					// alert("This date occurs in the past.");
+					errorMessage("This date occurs in the past.");					
 					return false;
 				}
 				break;
@@ -228,9 +231,9 @@
 			case "delete":
 				// make AJAX call to delete slot
 				var compareDate = Date.compare(Date.today(), fullDateParam);
-				console.log(Date.today()); //debug code  -Karen
-				console.log(fullDateParam); //debug code -Karen
-				console.log(compareDate); //debug code  -Karen
+				//console.log(Date.today()); //debug code  -Karen
+				//console.log(fullDateParam); //debug code -Karen
+				//console.log(compareDate); //debug code  -Karen
 				if (compareDate === (0 || -1)) {	
 					$.ajax({
 						url: '/api/v1/remove',
@@ -243,18 +246,21 @@
 								updateSlotStyle($slotObject, "display");
 								return true;
 							} else {
-								alert(data.message);
+								// alert(data.message);
+								errorMessage(data.message);
 								return false;
 								}
 						},
 						error: function(req, status, err) {
-							alert("Not able to delete slot. Error message: " + err); // Added by Giovanna 7/16
+							// alert("Not able to delete slot. Error message: " + err); // Added by Giovanna 7/16
+							errorMessage("Not able to delete slot. Error message: " + err);
 							return false;
 						}
 					});
 				} else {
 					// display error message
-					alert("This date occurs in the past.");
+					// alert("This date occurs in the past.");
+					errorMessage("This date occurs in the past.");
 					return false;
 				}
 				break;	
@@ -412,8 +418,6 @@
 			var firstDateOfWeek_month = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("MMM");
 			var firstDateOfWeek_year = Date.parse(firstDayOfWeek.toLocaleDateString("en-US")).toString("yyyy");
 
-			console.log("firstDateOfWeek_day:" + firstDateOfWeek_day + ", firstDateOfWeek_month:" + firstDateOfWeek_month + ", firstDateOfWeek_year:" + firstDateOfWeek_year);
-
 			var lastDateOfWeek = firstDayOfWeek.clone();
 			lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
 /*		
@@ -425,8 +429,6 @@
 			var lastDateOfWeek_day = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("d "); //Giovanna - added space in "d" format
 			var lastDateOfWeek_month = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("MMM");
 			var lastDateOfWeek_year = Date.parse(lastDateOfWeek.toLocaleDateString("en-US")).toString("yyyy");
-
-			console.log("lastDateOfWeek_day:" + lastDateOfWeek_day + ", lastDateOfWeek_month:" + lastDateOfWeek_month + ", lastDateOfWeek_year:" + lastDateOfWeek_year);	
 
 			// update the date, month and year between prev and next buttons
 			if (firstDateOfWeek_month === lastDateOfWeek_month) {
@@ -450,14 +452,13 @@
 			break;
 
 		}
-
-
 	}
 
 	// -------------------------------------------------- //
 	// Update both, dates and content
 	// -------------------------------------------------- //
 	var updateCalendar = function(firstDayOfWeek, currentDate, datesArray, room, displayOption) {
+
 		updateDatesOnCalendar(firstDayOfWeek, currentDate, datesArray, displayOption);	
 		fillOutSlotFromDB(datesArray, room);
 
@@ -468,8 +469,14 @@
 				break;
 			case "day":
 				var weekDay = currentDate.getDay();
-				$("thead th[data-day][data-day!='" + weekDay + "']").hide();
-				$("td[data-day!='" + weekDay + "']").hide();
+				// Hide the header row for columns that are different from the date to display
+				// $("thead th[data-day][data-day!='" + weekDay + "']").hide();  --> it seems that '!=' inside the selector doesn't work all the time.
+				$("thead th[data-day]").hide();
+				$("thead th[data-day][data-day='" + weekDay + "']").show();
+
+				// Hide rest of rows for columns that are different from the date to display
+				$("td[data-day]").hide();				
+				$("td[data-day='" + weekDay + "']").show();				
 				break;	
 		}
 	}
@@ -481,7 +488,6 @@
 
 	// Grab username
 	var userName = "{{ username }}";
-	console.log(userName);
 
 	// Display username on upper right corner
 	$("#hd-username").text(userName);	
@@ -490,7 +496,7 @@
 	userName = userName.split("@")[0];
 
 	// Set room name
-	var room = "Room XYZ";
+	var room = "Room 004";
 	$(".hd-resourcename").text(room);
 
 	// Initial Display
@@ -500,7 +506,6 @@
 	// Identify screen size  -- Giovanna - July 21st
 	var height = $(window).height();
 	var width = $(window).width();
-	console.log("height: " + height + ", width: " + width);
 
 	var displayOption;
 	if (width < 768) {
@@ -509,24 +514,25 @@
 		displayOption = "week";		
 	}
 
-	// Calculate currentDate used for displaying only current Date for small devices
-	var currentDate = today;
+	var dateDisplayed = today.clone();
 
-	var datesArray = getWeekDaysArray(firstDayOfWeek, currentDate, displayOption);
-	updateCalendar(firstDayOfWeek, currentDate, datesArray, room, displayOption);
+	var datesArray = getWeekDaysArray(firstDayOfWeek, dateDisplayed, displayOption);
+	updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
 
 	// Initially disable prev button
 	$(".prevButton").addClass("disabled");
 
-	// Prev button
+	// Prev button logic
 	$(".prevButton").click(function(e){
 		e.preventDefault();
-		if (today < firstDayOfWeek) {
-			firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 7);
-			datesArray = getWeekDaysArray(firstDayOfWeek, currentDate, displayOption);
-			updateCalendar(firstDayOfWeek, currentDate, datesArray, room, displayOption);
+		if ((today < firstDayOfWeek && displayOption === "week") || (today < dateDisplayed && displayOption === "day") ) {
+			firstDayOfWeek.setDate(firstDayOfWeek.getDate() - 7);			
+			dateDisplayed.setDate(dateDisplayed.getDate() - 1);
+			datesArray = getWeekDaysArray(firstDayOfWeek, dateDisplayed, displayOption);
+			updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
 			$(".nextButton").removeClass("disabled");  // enable next button in case it was disabled
-			if (today > firstDayOfWeek) {
+			// if (today > firstDayOfWeek) {
+			if ((today > firstDayOfWeek && displayOption === "week") || (today >= dateDisplayed && displayOption === "day") ) {
 				$(".prevButton").addClass("disabled"); // disable prev button to prevent users from reserving rooms in the past
 			}			
 		} 
@@ -535,23 +541,28 @@
 	// Next button
 	$(".nextButton").click(function(e){
 		e.preventDefault();		
-		// set firstDayOfWeek to 1 week ahead and update dates on calendar
-		firstDayOfWeek.setDate(firstDayOfWeek.getDate() + 7);
-		datesArray = getWeekDaysArray(firstDayOfWeek, currentDate, displayOption);
-		updateCalendar(firstDayOfWeek, currentDate, datesArray, room, displayOption);
-		
-		$(".prevButton").removeClass("disabled");  // enable prev button in case it was disabled
 
 		// calculate date 30 days from today
 		var todayPlus30days = today.clone();
 		todayPlus30days.setDate(todayPlus30days.getDate() + 30);
-		// calculate last date of current week
-		var lastDateOfWeek = firstDayOfWeek.clone();
-		lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
 
-		if (todayPlus30days < lastDateOfWeek) {
-			$(".nextButton").addClass("disabled"); // disable next button when the current week is beyond today + 30 days			
-		}				
+		if ((todayPlus30days > lastDateOfWeek && displayOption === "week") || (dateDisplayed <= todayPlus30days && displayOption === "day") ) {
+			// set firstDayOfWeek to 1 week ahead and update dates on calendar
+			firstDayOfWeek.setDate(firstDayOfWeek.getDate() + 7);
+			dateDisplayed.setDate(dateDisplayed.getDate() + 1);
+			datesArray = getWeekDaysArray(firstDayOfWeek, dateDisplayed, displayOption);
+			updateCalendar(firstDayOfWeek, dateDisplayed, datesArray, room, displayOption);
+			
+			$(".prevButton").removeClass("disabled");  // enable prev button in case it was disabled
+
+			// calculate last date of current week
+			var lastDateOfWeek = firstDayOfWeek.clone();
+			lastDateOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+
+			if ((todayPlus30days < lastDateOfWeek && displayOption === "week") || (dateDisplayed >= todayPlus30days && displayOption === "day") ) {
+				$(".nextButton").addClass("disabled"); // disable next button when the current week is beyond today + 30 days			
+			}				
+		}	
 	});
 
 	// Slot "click" action
@@ -566,7 +577,7 @@
 				response = updateSlot($(this), datesArray, room, userName, "delete");
 			} else {
 				// display error message
-				alert("Cannot delete slots from different owner");
+				errorMessage("Cannot delete slots from different owner");
 			}			
 		}
 

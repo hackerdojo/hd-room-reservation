@@ -22,6 +22,7 @@ class HomePage(webapp2.RequestHandler):
     # If the user is not logged in, ask them to.
     if not user:
       html = '<a href="%s">Sign In</a>' % users.create_login_url('/')
+      # html = '<a href="%s">Sign In</a>' % users.create_login_url('/')
       self.response.write(html)
       return
 

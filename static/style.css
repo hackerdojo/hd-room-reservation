@@ -86,6 +86,7 @@
     right:0;
     top:70px;
     width: 400px;
+    max-width: 90%;
     z-index:1001;
     position:fixed;
 }
